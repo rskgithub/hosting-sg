@@ -6,6 +6,7 @@ $config = [
 	'language' => 'ru-RU',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+	'defaultRoute' => 'hosting',
     'components' => [
         'request' => [
             'cookieValidationKey' => 'TjNadAD3okPlGle85Mn6457IBW2NvT2r',
@@ -16,9 +17,6 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
-        ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',

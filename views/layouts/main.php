@@ -32,15 +32,14 @@ AppAsset::register($this);
 			echo Nav::widget([
 				'options' => ['class' => 'navbar-nav navbar-right'],
 				'items' => [
-					['label' => 'Главная', 'url' => ['/site/index']],
-					['label' => 'Хостинг', 'url' => ['']],
-					['label' => 'Клиенты', 'url' => ['']],
-					['label' => 'Цены', 'url' => ['']],
-					['label' => 'Пользователи', 'url' => ['']],
+					['label' => 'Хостинг', 'url' => ['/hosting/index']],
+					['label' => 'Клиенты', 'url' => ['/clients/index']],
+					['label' => 'Цены', 'url' => ['/price/index']],
+					['label' => 'Пользователи', 'url' => ['/users/index']],
 					Yii::$app->user->isGuest ?
-						['label' => 'Войти', 'url' => ['/site/login']] :
+						['label' => 'Войти', 'url' => ['/users/login']] :
 						['label' => 'Выйти (' . Yii::$app->user->identity->username . ')',
-							'url' => ['/site/logout'],
+							'url' => ['/users/logout'],
 							'linkOptions' => ['data-method' => 'post']],
 				],
 			]);
