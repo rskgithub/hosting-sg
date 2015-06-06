@@ -26,7 +26,9 @@ class HostingController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider = new ActiveDataProvider([
-			'query' => Hosting::find(),
+			'query' => Hosting::find()->where('paid_till > 0')->orderBy('paid_till'),
+			'sort' => false,
+			'pagination' => false,
 		]);
 
 		return $this->render('index', [
@@ -41,19 +43,6 @@ class HostingController extends Controller
 		]);
 	}
 
-	public function actionCreate()
-	{
-		$model = new Hosting();
-
-		if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			return $this->redirect(['view', 'id' => $model->id]);
-		} else {
-			return $this->render('create', [
-				'model' => $model,
-			]);
-		}
-	}
-
 	public function actionUpdate($id)
 	{
 		$model = $this->findModel($id);
@@ -65,13 +54,6 @@ class HostingController extends Controller
 				'model' => $model,
 			]);
 		}
-	}
-
-	public function actionDelete($id)
-	{
-		$this->findModel($id)->delete();
-
-		return $this->redirect(['index']);
 	}
 
 	protected function findModel($id)

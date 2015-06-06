@@ -3,81 +3,91 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
-$this->title = 'Hostings';
+$this->title = 'Хостинг';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="hosting-index">
 
 	<h1><?= Html::encode($this->title) ?></h1>
 
-	<p>
-		<?= Html::a('Create Hosting', ['create'], ['class' => 'btn btn-success']) ?>
-	</p>
-
 	<?= GridView::widget([
+		'id' => 'hosting-list',
 		'dataProvider' => $dataProvider,
+		'summary' => '',
+		'rowOptions' => function($dataProvider) {
+			$class = '';
+			if ($dataProvider->hosting_state == 0) {
+				$class = 'disable';
+			} else {
+				switch ($dataProvider->hosting_notification_user)
+				{
+					case '1': $class = 'warning-2w'; break;
+					case '2': $class = 'warning-2d'; break;
+					// TODO: Этого статуса ещё нет. Он будет появляться, когда будут продлять на 5 дней в ручную
+					case '3': $class = 'warning-credit'; break;
+				}
+			}
+			return ['class' => $class];
+		},
 		'columns' => [
-			['class' => 'yii\grid\SerialColumn'],
-
-			'id',
-			'domain:ntext',
-			'aliases:ntext',
-			'hidden',
-			'state:ntext',
-			// 'pdd_token:ntext',
-			// 'charsetsourceenc:ntext',
-			// 'charsetdefault:ntext',
-			// 'charsetpriority:ntext',
-			// 'php_default_charset:ntext',
-			// 'php_open_basedir:ntext',
-			// 'php_mbstring_func_overload:ntext',
-			// 'http_base_auth:ntext',
-			// 'http_base_auth_user:ntext',
-			// 'http_base_auth_password:ntext',
-			// 'hosting:ntext',
-			// 'hosting_user:ntext',
-			// 'hosting_password:ntext',
-			// 'contract_number:ntext',
-			// 'client_name:ntext',
-			// 'client_passport:ntext',
-			// 'client_passport_issued:ntext',
-			// 'client_registration_address:ntext',
-			// 'client_phone:ntext',
-			// 'client_actual_address:ntext',
-			// 'client_extended_info:ntext',
-			// 'domain_created:ntext',
-			// 'domain_paid_till:ntext',
-			// 'sg_account_created:ntext',
-			// 'sg_account_paid_till:ntext',
-			// 'admin_path:ntext',
-			// 'admin_user:ntext',
-			// 'admin_password:ntext',
-			// 'admin_email:ntext',
-			// 'admin_email_password:ntext',
-			// 'ssh_user:ntext',
-			// 'ssh_host:ntext',
-			// 'ssh_password:ntext',
-			// 'ssh_key:ntext',
-			// 'ssh_site_path:ntext',
-			// 'ftp_user:ntext',
-			// 'ftp_host:ntext',
-			// 'ftp_password:ntext',
-			// 'mysql_database:ntext',
-			// 'mysql_user:ntext',
-			// 'mysql_host:ntext',
-			// 'mysql_password:ntext',
-			// 'mysql_database_encoding:ntext',
-			// 'mysql_database_charset:ntext',
-			// 'mysql_database_collate:ntext',
-			// 'extended_info:ntext',
-			// 'paid_till',
-			// 'hosting_state',
-			// 'hosting_face',
-			// 'hosting_notification_user',
-			// 'hosting_notification_admin',
-			// 'rate',
-
-			['class' => 'yii\grid\ActionColumn'],
+			[
+				'attribute' => 'id',
+				'contentOptions' => ['width' => 70],
+			],
+			[
+				'attribute' => 'domain',
+				'contentOptions' => ['width' => 210],
+				'format' => 'html',
+				'value' => function ($dataProvider) {
+					return '<a href="'.Yii::$app->urlManager->createUrl(['/hosting/view', 'id' => $dataProvider->id]).'">'.$dataProvider->domain.'</a>';
+				}
+			],
+			[
+				'attribute' => 'hosting_state',
+				'contentOptions' => ['width' => 100],
+				'value' => function ($dataProvider) {
+					return $dataProvider->getHostingStatusesValue();
+				}
+			],
+			[
+				'attribute' => 'paid_till',
+				'contentOptions' => ['width' => 140],
+				'value' => function ($dataProvider) {
+					return date('d.m.Y H:i', $dataProvider->paid_till);
+				}
+			],
+			[
+				'label' => 'Владельцы',
+				'format' => 'html',
+				'value' => function ($dataProvider) {
+					$dataUsers = $dataProvider->getUsers()->all();
+					$content = '';
+					$count = count($dataUsers);
+					$index = 1;
+					foreach ($dataUsers as $user) {
+						$content .= '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $user->id]).'">'.$user->name.'</a>';
+						if ($index != $count) {
+							$content .= '<br />';
+						}
+						$index++;
+					}
+					return $content;
+				}
+			],
+			[
+				'attribute' => 'hosting_face',
+				'contentOptions' => ['width' => 150],
+				'value' => function ($dataProvider) {
+					return $dataProvider->getHostingFacesValue();
+				}
+			],
+			[
+				'attribute' => 'rate',
+				'contentOptions' => ['width' => 110],
+				'value' => function ($dataProvider) {
+					return $dataProvider->getPrice()->one()->value.' руб.';
+				}
+			],
 		],
 	]); ?>
 

@@ -6,11 +6,44 @@ use Yii;
 
 class Hosting extends \yii\db\ActiveRecord
 {
+	const HOSTING_STATUS_OFF = 0;
+	const HOSTING_STATUS_ON = 1;
+	const HOSTING_FACE_UR = 0;
+	const HOSTING_FACE_FIZ = 1;
+	
+	public static function getHostingStatusesArray()
+	{
+		return [
+			self::HOSTING_STATUS_OFF => 'Выключен',
+			self::HOSTING_STATUS_ON => 'Включён',
+		];
+	}
+	
+	public function getHostingStatusesValue()
+	{
+		$statuses = self::getHostingStatusesArray();
+		return isset($statuses[$this->hosting_state]) ? $statuses[$this->hosting_state] : '';
+	}
+	
+	public static function getHostingFacesArray()
+	{
+		return [
+			self::HOSTING_FACE_UR => 'Юридическое лицо',
+			self::HOSTING_FACE_FIZ => 'Физическое лицо',
+		];
+	}
+	
+	public function getHostingFacesValue()
+	{
+		$statuses = self::getHostingFacesArray();
+		return isset($statuses[$this->hosting_face]) ? $statuses[$this->hosting_face] : '';
+	}
+	
 	public static function tableName()
 	{
 		return 'information';
 	}
-
+	
 	public function rules()
 	{
 		return [
@@ -19,70 +52,21 @@ class Hosting extends \yii\db\ActiveRecord
 			[['hidden', 'paid_till', 'hosting_state', 'hosting_face', 'hosting_notification_user', 'hosting_notification_admin', 'rate'], 'integer']
 		];
 	}
-
+	
 	public function attributeLabels()
 	{
 		return [
 			'id' => 'ID',
-			'domain' => 'Domain',
-			'aliases' => 'Aliases',
-			'hidden' => 'Hidden',
-			'state' => 'State',
-			'pdd_token' => 'Pdd Token',
-			'charsetsourceenc' => 'Charsetsourceenc',
-			'charsetdefault' => 'Charsetdefault',
-			'charsetpriority' => 'Charsetpriority',
-			'php_default_charset' => 'Php Default Charset',
-			'php_open_basedir' => 'Php Open Basedir',
-			'php_mbstring_func_overload' => 'Php Mbstring Func Overload',
-			'http_base_auth' => 'Http Base Auth',
-			'http_base_auth_user' => 'Http Base Auth User',
-			'http_base_auth_password' => 'Http Base Auth Password',
-			'hosting' => 'Hosting',
-			'hosting_user' => 'Hosting User',
-			'hosting_password' => 'Hosting Password',
-			'contract_number' => 'Contract Number',
-			'client_name' => 'Client Name',
-			'client_passport' => 'Client Passport',
-			'client_passport_issued' => 'Client Passport Issued',
-			'client_registration_address' => 'Client Registration Address',
-			'client_phone' => 'Client Phone',
-			'client_actual_address' => 'Client Actual Address',
-			'client_extended_info' => 'Client Extended Info',
-			'domain_created' => 'Domain Created',
-			'domain_paid_till' => 'Domain Paid Till',
-			'sg_account_created' => 'Sg Account Created',
-			'sg_account_paid_till' => 'Sg Account Paid Till',
-			'admin_path' => 'Admin Path',
-			'admin_user' => 'Admin User',
-			'admin_password' => 'Admin Password',
-			'admin_email' => 'Admin Email',
-			'admin_email_password' => 'Admin Email Password',
-			'ssh_user' => 'Ssh User',
-			'ssh_host' => 'Ssh Host',
-			'ssh_password' => 'Ssh Password',
-			'ssh_key' => 'Ssh Key',
-			'ssh_site_path' => 'Ssh Site Path',
-			'ftp_user' => 'Ftp User',
-			'ftp_host' => 'Ftp Host',
-			'ftp_password' => 'Ftp Password',
-			'mysql_database' => 'Mysql Database',
-			'mysql_user' => 'Mysql User',
-			'mysql_host' => 'Mysql Host',
-			'mysql_password' => 'Mysql Password',
-			'mysql_database_encoding' => 'Mysql Database Encoding',
-			'mysql_database_charset' => 'Mysql Database Charset',
-			'mysql_database_collate' => 'Mysql Database Collate',
-			'extended_info' => 'Extended Info',
-			'paid_till' => 'Paid Till',
-			'hosting_state' => 'Hosting State',
-			'hosting_face' => 'Hosting Face',
+			'domain' => 'Хостинг',
+			'paid_till' => 'Оплачен до',
+			'hosting_state' => 'Состояние',
+			'hosting_face' => 'Лицо',
 			'hosting_notification_user' => 'Hosting Notification User',
 			'hosting_notification_admin' => 'Hosting Notification Admin',
-			'rate' => 'Rate',
+			'rate' => 'Стоимость',
 		];
 	}
-
+	
 	public function getPrice()
 	{
 		return $this->hasOne(Price::className(), ['id' => 'rate']);
