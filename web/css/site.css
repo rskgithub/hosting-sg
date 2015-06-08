@@ -93,5 +93,6 @@ a.desc:after {
 /* MY CSS */
 #hosting-list table tr.disable { background-color: #FAC4C4; }
 #hosting-list table tr.warning-credit { background-color: #C8C8C8; }
-#hosting-list table tr.warning-2d { background-color: #orange; }
+#hosting-list table tr.warning-2d { background-color: orange; }
 #hosting-list table tr.warning-2w { background-color: #A5C5A1; }
+p.bg-success { padding: 15px; }

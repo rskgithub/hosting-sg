@@ -10,6 +10,12 @@ class Hosting extends \yii\db\ActiveRecord
 	const HOSTING_STATUS_ON = 1;
 	const HOSTING_FACE_UR = 0;
 	const HOSTING_FACE_FIZ = 1;
+	const HOSTING_NOTICE_USER_NO = 0;
+	const HOSTING_NOTICE_USER_2W = 1;
+	const HOSTING_NOTICE_USER_2D = 2;
+	//const HOSTING_NOTICE_USER_CREDIT = 3;
+	const HOSTING_NOTICE_ADMIN_NO = 0;
+	const HOSTING_NOTICE_ADMIN_YES = 1;
 	
 	public static function getHostingStatusesArray()
 	{
@@ -39,6 +45,36 @@ class Hosting extends \yii\db\ActiveRecord
 		return isset($statuses[$this->hosting_face]) ? $statuses[$this->hosting_face] : '';
 	}
 	
+	public static function getHostingNoticeUserArray()
+	{
+		return [
+			self::HOSTING_NOTICE_USER_NO => 'Уведомлений не отправлялось',
+			self::HOSTING_NOTICE_USER_2W => '2-х недельное уведомление',
+			self::HOSTING_NOTICE_USER_2D => '2-х дневное уведомление',
+			//self::HOSTING_NOTICE_USER_CREDIT => 'Уведомление о кредите',
+		];
+	}
+	
+	public function getHostingNoticeUserValue()
+	{
+		$statuses = self::getHostingNoticeUserArray();
+		return isset($statuses[$this->hosting_notification_user]) ? $statuses[$this->hosting_notification_user] : '';
+	}
+	
+	public static function getHostingNoticeAdminArray()
+	{
+		return [
+			self::HOSTING_NOTICE_ADMIN_NO => 'Уведомлений не отправлялось',
+			self::HOSTING_NOTICE_ADMIN_YES => 'Запрос на отключение отправлен',
+		];
+	}
+	
+	public function getHostingNoticeAdminValue()
+	{
+		$statuses = self::getHostingNoticeAdminArray();
+		return isset($statuses[$this->hosting_notification_admin]) ? $statuses[$this->hosting_notification_admin] : '';
+	}
+	
 	public static function tableName()
 	{
 		return 'information';
@@ -47,9 +83,9 @@ class Hosting extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['domain', 'aliases', 'state', 'pdd_token', 'charsetsourceenc', 'charsetdefault', 'charsetpriority', 'php_default_charset', 'php_open_basedir', 'php_mbstring_func_overload', 'http_base_auth', 'http_base_auth_user', 'http_base_auth_password', 'hosting', 'hosting_user', 'hosting_password', 'contract_number', 'client_name', 'client_passport', 'client_passport_issued', 'client_registration_address', 'client_phone', 'client_actual_address', 'client_extended_info', 'domain_created', 'domain_paid_till', 'sg_account_created', 'sg_account_paid_till', 'admin_path', 'admin_user', 'admin_password', 'admin_email', 'admin_email_password', 'ssh_user', 'ssh_host', 'ssh_password', 'ssh_key', 'ssh_site_path', 'ftp_user', 'ftp_host', 'ftp_password', 'mysql_database', 'mysql_user', 'mysql_host', 'mysql_password', 'mysql_database_encoding', 'mysql_database_charset', 'mysql_database_collate', 'extended_info'], 'string'],
-			[['aliases', 'hidden', 'pdd_token', 'charsetsourceenc', 'charsetdefault', 'charsetpriority', 'php_default_charset', 'php_open_basedir', 'http_base_auth', 'http_base_auth_user', 'http_base_auth_password', 'hosting_password', 'client_name', 'client_passport', 'client_passport_issued', 'client_registration_address', 'client_phone', 'client_actual_address', 'client_extended_info', 'admin_email', 'admin_email_password', 'mysql_database_encoding', 'mysql_database_charset', 'mysql_database_collate'], 'required'],
-			[['hidden', 'paid_till', 'hosting_state', 'hosting_face', 'hosting_notification_user', 'hosting_notification_admin', 'rate'], 'integer']
+			[['hosting_state', 'hosting_face', 'rate'], 'required'],
+			[['hosting_state', 'hosting_face', 'rate'], 'integer'],
+			['extended_info', 'string'],
 		];
 	}
 	
@@ -61,9 +97,10 @@ class Hosting extends \yii\db\ActiveRecord
 			'paid_till' => 'Оплачен до',
 			'hosting_state' => 'Состояние',
 			'hosting_face' => 'Лицо',
-			'hosting_notification_user' => 'Hosting Notification User',
-			'hosting_notification_admin' => 'Hosting Notification Admin',
+			'hosting_notification_user' => 'Статус уведомления владельцам',
+			'hosting_notification_admin' => 'Статус уведомления администратору',
 			'rate' => 'Стоимость',
+			'extended_info' => 'Комментарий'
 		];
 	}
 	

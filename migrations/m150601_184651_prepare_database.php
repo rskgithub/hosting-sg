@@ -38,12 +38,14 @@ class m150601_184651_prepare_database extends Migration
 		$this->execute('UPDATE `information` SET `rate` = 2 WHERE `id` IN (11444, 11208)');
 		$this->execute('UPDATE `information` SET `rate` = 3 WHERE `id` = 11613');
 		$this->execute('UPDATE `information` SET `rate` = 4 WHERE `id` = 11382');
+		$this->execute('UPDATE `information` SET `hosting_notification_user` = 0, `hosting_notification_admin` = 0 WHERE `id` = 11568');
 		$this->addForeignKey('FK_information_rates', 'information', 'rate', 'rates', 'id', 'SET NULL', 'RESTRICT');
 	}
 
 	public function safeDown()
 	{
 		$this->dropForeignKey('FK_information_rates', 'information');
+		$this->execute('UPDATE `information` SET `hosting_notification_user` = 2, `hosting_notification_admin` = 1 WHERE `id` = 11568');
 		$this->dropColumn('information', 'rate');
 		$this->addColumn('information', 'rate', Schema::TYPE_INTEGER . '(1) NOT NULL DEFAULT 1 AFTER `hosting_notification_admin`');
 		$this->execute('UPDATE `information` SET `rate` = 1');

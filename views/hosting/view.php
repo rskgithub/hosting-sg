@@ -3,86 +3,68 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Hostings', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = $model->domain . ' [# '.$model->id.']';
+$this->params['breadcrumbs'][] = ['label' => 'Хостинг', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $model->domain;
+
+$hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
 ?>
 <div class="hosting-view">
-
 	<h1><?= Html::encode($this->title) ?></h1>
-
+	<?= (!empty($hosting_alert)) ? '<p class="bg-success">'.$hosting_alert.'</p>' : '' ?>
 	<p>
-		<?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Delete', ['delete', 'id' => $model->id], [
-			'class' => 'btn btn-danger',
-			'data' => [
-				'confirm' => 'Are you sure you want to delete this item?',
-				'method' => 'post',
-			],
-		]) ?>
+		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+		<?= Html::a('Отправить уведомление', ['update', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+		<?= Html::a('Продлить на 5 дней', ['extension', 'id' => $model->id, 'day' => 5], ['class' => 'btn btn-warning']) ?>
+		<?= Html::a('Продлить на год', ['extension', 'id' => $model->id, 'day' => 365], ['class' => 'btn btn-success']) ?>
 	</p>
+	<?php
+	$dataClients = $model->getUsers()->all();
+	$clients = '';
+	$count = count($dataClients);
+	$index = 1;
+	foreach ($dataClients as $client) {
+		$clients .= '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $client->id]).'">'.$client->name.'</a>';
+		if ($index != $count) {
+			$clients .= '<br />';
+		}
+		$index++;
+	}
 
-	<?= DetailView::widget([
+	echo DetailView::widget([
 		'model' => $model,
 		'attributes' => [
-			'id',
-			'domain:ntext',
-			'aliases:ntext',
-			'hidden',
-			'state:ntext',
-			'pdd_token:ntext',
-			'charsetsourceenc:ntext',
-			'charsetdefault:ntext',
-			'charsetpriority:ntext',
-			'php_default_charset:ntext',
-			'php_open_basedir:ntext',
-			'php_mbstring_func_overload:ntext',
-			'http_base_auth:ntext',
-			'http_base_auth_user:ntext',
-			'http_base_auth_password:ntext',
-			'hosting:ntext',
-			'hosting_user:ntext',
-			'hosting_password:ntext',
-			'contract_number:ntext',
-			'client_name:ntext',
-			'client_passport:ntext',
-			'client_passport_issued:ntext',
-			'client_registration_address:ntext',
-			'client_phone:ntext',
-			'client_actual_address:ntext',
-			'client_extended_info:ntext',
-			'domain_created:ntext',
-			'domain_paid_till:ntext',
-			'sg_account_created:ntext',
-			'sg_account_paid_till:ntext',
-			'admin_path:ntext',
-			'admin_user:ntext',
-			'admin_password:ntext',
-			'admin_email:ntext',
-			'admin_email_password:ntext',
-			'ssh_user:ntext',
-			'ssh_host:ntext',
-			'ssh_password:ntext',
-			'ssh_key:ntext',
-			'ssh_site_path:ntext',
-			'ftp_user:ntext',
-			'ftp_host:ntext',
-			'ftp_password:ntext',
-			'mysql_database:ntext',
-			'mysql_user:ntext',
-			'mysql_host:ntext',
-			'mysql_password:ntext',
-			'mysql_database_encoding:ntext',
-			'mysql_database_charset:ntext',
-			'mysql_database_collate:ntext',
-			'extended_info:ntext',
-			'paid_till',
-			'hosting_state',
-			'hosting_face',
-			'hosting_notification_user',
-			'hosting_notification_admin',
-			'rate',
+			[
+				'attribute' => 'hosting_state',
+				'value' => $model->getHostingStatusesValue(),
+			],
+			[
+				'attribute' => 'paid_till',
+				'value' => date('d.m.Y H:i', $model->paid_till),
+			],
+			[
+				'attribute' => 'hosting_face',
+				'value' => $model->getHostingFacesValue(),
+			],
+			[
+				'label' => 'Владельцы',
+				'format' => 'html',
+				'value' => $clients,
+			],
+			[
+				'attribute' => 'hosting_notification_user',
+				'value' => $model->getHostingNoticeUserValue(),
+			],
+			[
+				'attribute' => 'hosting_notification_admin',
+				'value' => $model->getHostingNoticeAdminValue(),
+			],
+			[
+				'attribute' => 'rate',
+				'value' => $model->getPrice()->one()->value.' руб.',
+			],
+			'extended_info',
 		],
-	]) ?>
-
+	]);
+	?>
 </div>
