@@ -23,7 +23,8 @@ class Hosting extends \yii\db\ActiveRecord
 	
 	const HOSTING_NOTICE_ADMIN_NO = 0;
 	const HOSTING_NOTICE_ADMIN_YES = 1;
-	const HOSTING_NOTICE_ADMIN_F_FREEZE = 2;
+	const HOSTING_NOTICE_ADMIN_S_FREEZE = 2;
+	const HOSTING_NOTICE_ADMIN_F_FREEZE = 3;
 	
 	public static function getHostingStatusesArray()
 	{
@@ -89,6 +90,7 @@ class Hosting extends \yii\db\ActiveRecord
 		return [
 			self::HOSTING_NOTICE_ADMIN_NO => 'Уведомлений не отправлялось',
 			self::HOSTING_NOTICE_ADMIN_YES => 'Запрос на отключение отправлен',
+			self::HOSTING_NOTICE_ADMIN_S_FREEZE => 'Уведомление об активации заморозки',
 			self::HOSTING_NOTICE_ADMIN_F_FREEZE => 'Уведомление об окончании заморозки',
 		];
 	}

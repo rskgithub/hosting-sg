@@ -14,7 +14,6 @@ Thumbs.db
 
 # service files
 /config/db.php
-composer.json
 
 # runtime folders and files
 /components/rbac/assignments.php
