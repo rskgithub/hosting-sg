@@ -19,12 +19,12 @@ $this->params['breadcrumbs'][] = $this->title;
 			if ($dataProvider->hosting_state == 0) {
 				$class = 'disable';
 			} else {
-				switch ($dataProvider->hosting_notification_user)
+				switch ($dataProvider->notification_user)
 				{
 					case '1': $class = 'warning-2w'; break;
 					case '2': $class = 'warning-2d'; break;
-					// TODO: Этого статуса ещё нет. Он будет появляться, когда будут продлять на 5 дней в ручную
-					case '3': $class = 'warning-credit'; break;
+					case '3': $class = 'warning-freeze'; break;
+					case '4': $class = 'disable'; break;
 				}
 			}
 			return ['class' => $class];
@@ -54,6 +54,13 @@ $this->params['breadcrumbs'][] = $this->title;
 				'contentOptions' => ['width' => 140],
 				'value' => function ($dataProvider) {
 					return date('d.m.Y H:i', $dataProvider->paid_till);
+				}
+			],
+			[
+				'attribute' => 'hosting_freeze',
+				'contentOptions' => ['width' => 75],
+				'value' => function ($dataProvider) {
+					return $dataProvider->getHostingFreezesValue();
 				}
 			],
 			[

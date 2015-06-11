@@ -14,8 +14,8 @@ $hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
 	<?= (!empty($hosting_alert)) ? '<p class="bg-success">'.$hosting_alert.'</p>' : '' ?>
 	<p>
 		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Отправить уведомление', ['update', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
-		<?= Html::a('Продлить на 5 дней', ['extension', 'id' => $model->id, 'day' => 5], ['class' => 'btn btn-warning']) ?>
+		<?= Html::a('Отправить уведомление', ['update', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+		<?= ($model->hosting_freeze == 0 && $model->paid_till > time() && $model->hosting_state == 1) ? Html::a('Заморозить на 5 дней', ['extension', 'id' => $model->id, 'day' => 5], ['class' => 'btn btn-info']) : '' ?>
 		<?= Html::a('Продлить на год', ['extension', 'id' => $model->id, 'day' => 365], ['class' => 'btn btn-success']) ?>
 	</p>
 	<?php
@@ -39,6 +39,10 @@ $hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
 				'value' => $model->getHostingStatusesValue(),
 			],
 			[
+				'attribute' => 'hosting_freeze',
+				'value' => ($model->hosting_freeze == 1) ? $model->getHostingFreezesValue().' (до '.date('d.m.Y H:i', $model->paid_till + 60 * 60 * 24 * 5).')' : $model->getHostingFreezesValue(),
+			],
+			[
 				'attribute' => 'paid_till',
 				'value' => date('d.m.Y H:i', $model->paid_till),
 			],
@@ -52,11 +56,11 @@ $hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
 				'value' => $clients,
 			],
 			[
-				'attribute' => 'hosting_notification_user',
+				'attribute' => 'notification_user',
 				'value' => $model->getHostingNoticeUserValue(),
 			],
 			[
-				'attribute' => 'hosting_notification_admin',
+				'attribute' => 'notification_admin',
 				'value' => $model->getHostingNoticeAdminValue(),
 			],
 			[

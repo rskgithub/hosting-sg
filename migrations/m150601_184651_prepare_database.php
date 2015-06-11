@@ -16,6 +16,9 @@ class m150601_184651_prepare_database extends Migration
 		$this->execute('ALTER TABLE `information` ENGINE=InnoDB');
 		$this->addColumn('users', 'auth_key', Schema::TYPE_STRING . '(32) NULL DEFAULT NULL AFTER `email`');
 		$this->addColumn('users', 'status', Schema::TYPE_SMALLINT . '(1) NOT NULL DEFAULT 0 AFTER `activation_key`');
+		$this->addColumn('information', 'hosting_freeze', Schema::TYPE_SMALLINT . '(1) NOT NULL DEFAULT 0 AFTER `hosting_state`');
+		$this->renameColumn('information', 'hosting_notification_user', 'notification_user');
+		$this->renameColumn('information', 'hosting_notification_admin', 'notification_admin');
 		$this->addForeignKey('FK_information_users_users', 'information_users', 'user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
 		$this->addForeignKey('FK_information_users_information', 'information_users', 'information_id', 'information', 'id', 'CASCADE', 'RESTRICT');
 		$this->addForeignKey('FK_pay_log_users', 'pay_log', 'user_ID', 'users', 'id', 'CASCADE', 'RESTRICT');
@@ -68,6 +71,9 @@ class m150601_184651_prepare_database extends Migration
 		$this->dropForeignKey('FK_pay_log_users', 'pay_log');
 		$this->dropForeignKey('FK_information_users_information', 'information_users');
 		$this->dropForeignKey('FK_information_users_users', 'information_users');
+		$this->renameColumn('information', 'notification_user', 'hosting_notification_user');
+		$this->renameColumn('information', 'notification_admin', 'hosting_notification_admin');
+		$this->dropColumn('information', 'hosting_freeze');
 		$this->dropColumn('users', 'status');
 		$this->dropColumn('users', 'auth_key');
 		$this->execute('ALTER TABLE `information` ENGINE=MyISAM');

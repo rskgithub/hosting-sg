@@ -15,8 +15,12 @@ $this->params['breadcrumbs'][] = 'Изменение настроек';
 	<div class="hosting-form">
 		<?php
 		$form = ActiveForm::begin();
-		echo $form->field($model, 'hosting_state')->dropDownList(['0' => 'Выключен', '1' => 'Включён']);
-		echo $form->field($model, 'hosting_face')->dropDownList(['0' => 'Юридическое лицо', '1' => 'Физическое лицо']);
+		echo $form->field($model, 'hosting_state')->dropDownList($model->getHostingStatusesArray());
+		if ($model->paid_till > time() && $model->hosting_state == 1) {
+			echo $form->field($model, 'hosting_freeze')->dropDownList($model->getHostingFreezesArray());
+		}
+		echo $form->field($model, 'paid_till')->widget(\yii\jui\DatePicker::classname(), ['language' => 'ru', 'dateFormat' => 'dd.MM.yyyy', 'options' => ['class' => 'form-control']])->hint('Не рекомендуется изменять дату в ручном режиме.');
+		echo $form->field($model, 'hosting_face')->dropDownList($model->getHostingFacesArray());
 		echo $form->field($model, 'rate')->dropDownList(ArrayHelper::map(Price::find()->all(), 'id', 'value'));
 		echo $form->field($model, 'extended_info')->textarea(['rows' => 4]);
 		echo '
