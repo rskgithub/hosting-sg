@@ -8,13 +8,15 @@ $this->params['breadcrumbs'][] = ['label' => 'Хостинг', 'url' => ['index'
 $this->params['breadcrumbs'][] = $model->domain;
 
 $hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
+
+$last_manual_notification = ($model->manual_notification > 0) ? ' (посл. отправка: '.date('d.m.Y', $model->manual_notification).')' : '';
 ?>
 <div class="hosting-view">
 	<h1><?= Html::encode($this->title) ?></h1>
 	<?= (!empty($hosting_alert)) ? '<p class="bg-success">'.$hosting_alert.'</p>' : '' ?>
 	<p>
 		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Отправить уведомление', ['update', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+		<?= Html::a('Отправить уведомление'.$last_manual_notification, ['notification', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
 		<?= ($model->hosting_freeze == 0 && $model->paid_till > time() && $model->hosting_state == 1) ? Html::a('Заморозить на 5 дней', ['extension', 'id' => $model->id, 'day' => 5], ['class' => 'btn btn-info']) : '' ?>
 		<?= Html::a('Продлить на год', ['extension', 'id' => $model->id, 'day' => 365], ['class' => 'btn btn-success']) ?>
 	</p>

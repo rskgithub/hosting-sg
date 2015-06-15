@@ -19,6 +19,7 @@ class m150601_184651_prepare_database extends Migration
 		$this->addColumn('information', 'hosting_freeze', Schema::TYPE_SMALLINT . '(1) NOT NULL DEFAULT 0 AFTER `hosting_state`');
 		$this->renameColumn('information', 'hosting_notification_user', 'notification_user');
 		$this->renameColumn('information', 'hosting_notification_admin', 'notification_admin');
+		$this->addColumn('information', 'manual_notification', Schema::TYPE_INTEGER . '(11) unsigned NOT NULL DEFAULT 0 AFTER `notification_admin`');
 		$this->addForeignKey('FK_information_users_users', 'information_users', 'user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
 		$this->addForeignKey('FK_information_users_information', 'information_users', 'information_id', 'information', 'id', 'CASCADE', 'RESTRICT');
 		$this->addForeignKey('FK_pay_log_users', 'pay_log', 'user_ID', 'users', 'id', 'CASCADE', 'RESTRICT');
@@ -36,21 +37,21 @@ class m150601_184651_prepare_database extends Migration
 		$this->insert('rates', ['id' => 4, 'value' => 8472]);
 		//
 		$this->dropColumn('information', 'rate');
-		$this->addColumn('information', 'rate', Schema::TYPE_INTEGER . '(11) unsigned NULL DEFAULT NULL AFTER `hosting_notification_admin`');
+		$this->addColumn('information', 'rate', Schema::TYPE_INTEGER . '(11) unsigned NULL DEFAULT NULL AFTER `notification_admin`');
 		$this->execute('UPDATE `information` SET `rate` = 1 WHERE `paid_till` > 0');
 		$this->execute('UPDATE `information` SET `rate` = 2 WHERE `id` IN (11444, 11208)');
 		$this->execute('UPDATE `information` SET `rate` = 3 WHERE `id` = 11613');
 		$this->execute('UPDATE `information` SET `rate` = 4 WHERE `id` = 11382');
-		$this->execute('UPDATE `information` SET `hosting_notification_user` = 0, `hosting_notification_admin` = 0 WHERE `id` = 11568');
+		$this->execute('UPDATE `information` SET `notification_user` = 0, `notification_admin` = 0 WHERE `id` = 11568');
 		$this->addForeignKey('FK_information_rates', 'information', 'rate', 'rates', 'id', 'SET NULL', 'RESTRICT');
 	}
 
 	public function safeDown()
 	{
 		$this->dropForeignKey('FK_information_rates', 'information');
-		$this->execute('UPDATE `information` SET `hosting_notification_user` = 2, `hosting_notification_admin` = 1 WHERE `id` = 11568');
+		$this->execute('UPDATE `information` SET `notification_user` = 2, `notification_admin` = 1 WHERE `id` = 11568');
 		$this->dropColumn('information', 'rate');
-		$this->addColumn('information', 'rate', Schema::TYPE_INTEGER . '(1) NOT NULL DEFAULT 1 AFTER `hosting_notification_admin`');
+		$this->addColumn('information', 'rate', Schema::TYPE_INTEGER . '(1) NOT NULL DEFAULT 1 AFTER `notification_admin`');
 		$this->execute('UPDATE `information` SET `rate` = 1');
 		$this->execute('UPDATE `information` SET `rate` = 2 WHERE `id` IN (11444, 11208)');
 		$this->execute('UPDATE `information` SET `rate` = 3 WHERE `id` = 11613');
@@ -71,6 +72,7 @@ class m150601_184651_prepare_database extends Migration
 		$this->dropForeignKey('FK_pay_log_users', 'pay_log');
 		$this->dropForeignKey('FK_information_users_information', 'information_users');
 		$this->dropForeignKey('FK_information_users_users', 'information_users');
+		$this->dropColumn('information', 'manual_notification');
 		$this->renameColumn('information', 'notification_user', 'hosting_notification_user');
 		$this->renameColumn('information', 'notification_admin', 'hosting_notification_admin');
 		$this->dropColumn('information', 'hosting_freeze');

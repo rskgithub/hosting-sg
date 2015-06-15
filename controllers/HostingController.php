@@ -70,6 +70,18 @@ class HostingController extends Controller
 		}
 		return $this->redirect(['view', 'id' => $id]);
 	}
+	
+	public function actionNotification($id)
+	{
+		$model = $this->findModel($id);
+		if ($model->sendManualNotification()) {
+			Yii::$app->getSession()->setFlash('hosting_alert', 'Уведомление успешно отправлено!');
+			/* TODO: добавить запись в журнал событий */
+		} else {
+			Yii::$app->getSession()->setFlash('hosting_alert', 'К сожалению, отправка уведомления не удалась.');
+		}
+		return $this->redirect(['view', 'id' => $id]);
+	}
 
 	protected function findModel($id)
 	{

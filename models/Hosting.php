@@ -127,6 +127,7 @@ class Hosting extends \yii\db\ActiveRecord
 			'hosting_face' => 'Лицо',
 			'notification_user' => 'Статус уведомления владельцам',
 			'notification_admin' => 'Статус уведомления администратору',
+			'manual_notification' => 'Ручное уведомление',
 			'rate' => 'Стоимость',
 			'extended_info' => 'Комментарий'
 		];
@@ -151,5 +152,27 @@ class Hosting extends \yii\db\ActiveRecord
 	{
 		$this->paid_till = strtotime($this->paid_till.' 01:00');
 		return parent::beforeSave($insert);
+	}
+	
+	public function sendManualNotification()
+	{
+		$arOwners = $this->getUsers()->all();
+		
+		if ($arOwners) {
+			$messages = [];
+			foreach ($arOwners as $owner) {
+				$messages[] = Yii::$app->mailer->compose(['html' => 'manualNotification-html'], ['user' => $owner, 'hosting' => $this])
+					->setFrom([Yii::$app->params['supportEmail'] => 'SalesGeneration'])
+					//->setTo($owner->email)
+					->setTo(['nordway88@gmail.com', 'theicesun@yandex.ru'])
+					->setSubject('Уведомление о приближающемся сроке оплаты хостинга');
+			}
+			if (Yii::$app->mailer->sendMultiple($messages) > 0) {
+				$this->updateAttributes(['manual_notification' => time()]);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
