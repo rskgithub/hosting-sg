@@ -91,8 +91,9 @@ a.desc:after {
 }
 
 /* MY CSS */
-#hosting-list table tr.disable { background-color: #FCE5E5; }
-#hosting-list table tr.warning-freeze { background-color: #E5FAFF; }
-#hosting-list table tr.warning-2d { background-color: #FCEDD1; }
-#hosting-list table tr.warning-2w { background-color: #E8FFE5; }
+table tr.disable { background-color: #FCE5E5 !important; }
+table tr.warning-freeze { background-color: #E5FAFF !important; }
+table tr.warning-2d { background-color: #FCEDD1 !important; }
+table tr.warning-2w { background-color: #E8FFE5 !important; }
+table tr.owner-fail a { color: red !important; }
 p.bg-success { padding: 15px; }

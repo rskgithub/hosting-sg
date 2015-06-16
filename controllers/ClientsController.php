@@ -26,7 +26,9 @@ class ClientsController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider = new ActiveDataProvider([
-			'query' => Users::find(),
+			'query' => Users::find()->where('status = 0')->orderBy('name'),
+			'sort' => false,
+			'pagination' => false,
 		]);
 
 		return $this->render('index', [
@@ -46,6 +48,7 @@ class ClientsController extends Controller
 		$model = new Users();
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			/* TODO: добавить запись в журнал событий */
 			return $this->redirect(['view', 'id' => $model->id]);
 		} else {
 			return $this->render('create', [
@@ -59,6 +62,7 @@ class ClientsController extends Controller
 		$model = $this->findModel($id);
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			/* TODO: добавить запись в журнал событий */
 			return $this->redirect(['view', 'id' => $model->id]);
 		} else {
 			return $this->render('update', [
@@ -70,7 +74,7 @@ class ClientsController extends Controller
 	public function actionDelete($id)
 	{
 		$this->findModel($id)->delete();
-
+		/* TODO: добавить запись в журнал событий */
 		return $this->redirect(['index']);
 	}
 
@@ -79,7 +83,7 @@ class ClientsController extends Controller
 		if (($model = Users::findOne($id)) !== null) {
 			return $model;
 		} else {
-			throw new NotFoundHttpException('The requested page does not exist.');
+			throw new NotFoundHttpException('Ничего не найдено.');
 		}
 	}
 }

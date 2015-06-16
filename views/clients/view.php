@@ -1,44 +1,148 @@
 <?php
 
 use yii\helpers\Html;
+use yii\grid\GridView;
 use yii\widgets\DetailView;
+use yii\data\ActiveDataProvider;
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Клиенты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$dataHostings = new ActiveDataProvider([
+	'query' => $model->getHosting()->orderBy('paid_till'),
+	'sort' => false,
+	'pagination' => false,
+]);
+
+$dataPays = new ActiveDataProvider([
+	'query' => $model->getPayLogs()->orderBy(['date' => SORT_DESC]),
+	'sort' => false,
+	'pagination' => false,
+]);
 ?>
-<div class="users-view">
-
+<div class="clients-view">
 	<h1><?= Html::encode($this->title) ?></h1>
-
 	<p>
-		<?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Delete', ['delete', 'id' => $model->id], [
+		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+		<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
 			'class' => 'btn btn-danger',
 			'data' => [
-				'confirm' => 'Are you sure you want to delete this item?',
+				'confirm' => 'Вы уверены, что хотите удалить этого клиента?',
 				'method' => 'post',
 			],
 		]) ?>
 	</p>
-
-	<?= DetailView::widget([
+	<?php
+	echo DetailView::widget([
 		'model' => $model,
 		'attributes' => [
-			'id',
-			'email:email',
-			'auth_key',
-			'password',
-			'name',
-			'passport:ntext',
-			'passport_issued:ntext',
+			'email:ntext',
 			'phone:ntext',
 			'address:ntext',
+			'passport:ntext',
+			'passport_issued:ntext',
 			'u_inn',
 			'u_kpp',
-			'activation_key',
-			'status',
 		],
-	]) ?>
-
+	]);
+	?>
+	<br />
+	<h2>Хостинг</h2>
+	<p><?= Html::a('Добавить хостинг', ['hosting', 'action' => 'add', 'client_id' => $model->id], ['class' => 'btn btn-success']) ?></p>
+	<?php
+	echo GridView::widget([
+		'id' => 'hostings-by-client',
+		'dataProvider' => $dataHostings,
+		'summary' => '',
+		'rowOptions' => function($dataHostings) {
+			$class = '';
+			if ($dataHostings->hosting_state == 0) {
+				$class = 'disable';
+			} else {
+				switch ($dataHostings->notification_user)
+				{
+					case '1': $class = 'warning-2w'; break;
+					case '2': $class = 'warning-2d'; break;
+					case '3': $class = 'warning-freeze'; break;
+					case '4': $class = 'disable'; break;
+				}
+			}
+			return ['class' => $class];
+		},
+		'columns' => [
+			[
+				'attribute' => 'id',
+				'contentOptions' => ['width' => 70],
+			],
+			[
+				'attribute' => 'domain',
+				'contentOptions' => ['width' => 210],
+				'format' => 'html',
+				'value' => function ($dataHostings) {
+					return '<a href="'.Yii::$app->urlManager->createUrl(['/hosting/view', 'id' => $dataHostings->id]).'">'.$dataHostings->domain.'</a>';
+				}
+			],
+			[
+				'attribute' => 'hosting_state',
+				'contentOptions' => ['width' => 100],
+				'value' => function ($dataHostings) {
+					return $dataHostings->getHostingStatusesValue();
+				}
+			],
+			[
+				'attribute' => 'paid_till',
+				'contentOptions' => ['width' => 140],
+				'value' => function ($dataHostings) {
+					return date('d.m.Y H:i', $dataHostings->paid_till);
+				}
+			],
+			[
+				'attribute' => 'hosting_freeze',
+				'contentOptions' => ['width' => 75],
+				'value' => function ($dataHostings) {
+					return $dataHostings->getHostingFreezesValue();
+				}
+			],
+			[
+				'attribute' => 'hosting_face',
+				'contentOptions' => ['width' => 150],
+				'value' => function ($dataHostings) {
+					return $dataHostings->getHostingFacesValue();
+				}
+			],
+			[
+				'attribute' => 'rate',
+				'contentOptions' => ['width' => 110],
+				'value' => function ($dataHostings, $model) {
+					return $dataHostings->getPrice()->one()->value.' руб.';
+				}
+			],
+			[
+				'label' => 'Управление',
+				'contentOptions' => ['width' => 100],
+				'format' => 'html',
+				'value' => function ($dataHostings) use ($model) {
+					return Html::a('Удалить', ['hosting', 'action' => 'delete', 'client_id' => $model->id, 'hosting_id' => $dataHostings->id], ['class' => 'btn btn-danger']);
+				}
+			],
+		],
+	]);
+	?>
+	<br />
+	<h2>История платежей</h2>
+	<?php 
+	echo GridView::widget([
+		'id' => 'pays-by-client',
+		'dataProvider' => $dataPays,
+		'summary' => '',
+		'columns' => [
+			'id',
+			'date',
+			'hosting_name',
+			'value',
+			'state',
+		],
+	]);
+	?>
 </div>

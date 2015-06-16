@@ -10,17 +10,25 @@ class Users extends \yii\db\ActiveRecord
 	{
 		return 'users';
 	}
+	
+	public function scenarios()
+	{
+		$scenarios = parent::scenarios();
+		$scenarios['create'] = ['name', 'email', 'status'];
+		$scenarios['update'] = ['name', 'email', 'phone', 'address', 'passport', 'passport_issued', 'u_inn', 'u_kpp'];
+		return $scenarios;
+	}
 
 	public function rules()
 	{
 		return [
-			[['email', 'password', 'name', 'passport', 'passport_issued', 'phone', 'address', 'activation_key'], 'required'],
-			[['passport', 'passport_issued', 'phone', 'address'], 'string'],
-			[['status'], 'integer'],
-			[['email'], 'string', 'max' => 100],
-			[['auth_key'], 'string', 'max' => 32],
-			[['password', 'name', 'u_inn', 'u_kpp'], 'string', 'max' => 255],
-			[['activation_key'], 'string', 'max' => 60]
+			[['name', 'email'], 'required'],
+			[['name', 'phone', 'address', 'passport', 'passport_issued', 'u_inn', 'u_kpp'], 'string', 'max' => 255],
+			['email', 'email'],
+			['email', 'unique', 'targetClass' => self::className(), 'message' => 'Этот e-mail уже используется'],
+			['email', 'string', 'max' => 100],
+			['status', 'integer'],
+			['status', 'default', 'value' => 0],
 		];
 	}
 
@@ -28,18 +36,14 @@ class Users extends \yii\db\ActiveRecord
 	{
 		return [
 			'id' => 'ID',
-			'email' => 'Email',
-			'auth_key' => 'Auth Key',
-			'password' => 'Password',
-			'name' => 'Name',
-			'passport' => 'Passport',
-			'passport_issued' => 'Passport Issued',
-			'phone' => 'Phone',
-			'address' => 'Address',
-			'u_inn' => 'U Inn',
-			'u_kpp' => 'U Kpp',
-			'activation_key' => 'Activation Key',
-			'status' => 'Status',
+			'email' => 'E-mail',
+			'name' => 'Клиент',
+			'passport' => 'Серия и номер паспорта',
+			'passport_issued' => 'Кем и когда выдан паспорт',
+			'phone' => 'Телефон',
+			'address' => 'Адрес',
+			'u_inn' => 'ИНН',
+			'u_kpp' => 'КПП',
 		];
 	}
 

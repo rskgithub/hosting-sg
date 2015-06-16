@@ -1,17 +1,25 @@
 <?php
 
 use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 
-$this->title = 'Create Users';
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = 'Добавить клиента';
+$this->params['breadcrumbs'][] = ['label' => 'Клиенты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="users-create">
-
+<div class="clients-create">
 	<h1><?= Html::encode($this->title) ?></h1>
-
-	<?= $this->render('_form', [
-		'model' => $model,
-	]) ?>
-
+	<div class="clients">
+	<?php
+	$form = ActiveForm::begin();
+	echo $form->field($model, 'name')->textInput(['maxlength' => true]);
+	echo $form->field($model, 'email')->textInput(['maxlength' => true]);
+	echo '
+	<div class="form-group">
+		'.Html::submitButton('Добавить', ['class' => 'btn btn-primary']).'
+	</div>		
+	';
+	ActiveForm::end();
+	?>
+	</div>
 </div>

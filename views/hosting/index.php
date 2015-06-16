@@ -7,10 +7,9 @@ $this->title = 'Хостинг';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="hosting-index">
-
 	<h1><?= Html::encode($this->title) ?></h1>
-
-	<?= GridView::widget([
+	<?php
+	echo GridView::widget([
 		'id' => 'hosting-list',
 		'dataProvider' => $dataProvider,
 		'summary' => '',
@@ -26,6 +25,9 @@ $this->params['breadcrumbs'][] = $this->title;
 					case '3': $class = 'warning-freeze'; break;
 					case '4': $class = 'disable'; break;
 				}
+			}
+			if (count($dataProvider->getUsers()->all()) == 0) {
+				$class .= ' owner-fail';
 			}
 			return ['class' => $class];
 		},
@@ -68,17 +70,11 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'html',
 				'value' => function ($dataProvider) {
 					$dataUsers = $dataProvider->getUsers()->all();
-					$content = '';
-					$count = count($dataUsers);
-					$index = 1;
+					$content = array();
 					foreach ($dataUsers as $user) {
-						$content .= '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $user->id]).'">'.$user->name.'</a>';
-						if ($index != $count) {
-							$content .= '<br />';
-						}
-						$index++;
+						$content[] = '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $user->id]).'">'.$user->name.'</a>';
 					}
-					return $content;
+					return implode('<br />', $content);
 				}
 			],
 			[
@@ -96,6 +92,6 @@ $this->params['breadcrumbs'][] = $this->title;
 				}
 			],
 		],
-	]); ?>
-
+	]);
+	?>
 </div>
