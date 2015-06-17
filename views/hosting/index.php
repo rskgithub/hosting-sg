@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					case '4': $class = 'disable'; break;
 				}
 			}
-			if (count($dataProvider->getUsers()->all()) == 0) {
+			if (count($dataProvider->getUsers()->all()) == 0 || $dataProvider->rate == 0) {
 				$class .= ' owner-fail';
 			}
 			return ['class' => $class];
@@ -88,7 +88,9 @@ $this->params['breadcrumbs'][] = $this->title;
 				'attribute' => 'rate',
 				'contentOptions' => ['width' => 110],
 				'value' => function ($dataProvider) {
-					return $dataProvider->getPrice()->one()->value.' руб.';
+					if ($dataProvider->rate > 0) {
+						return $dataProvider->getPrice()->one()->value.' руб.';
+					}
 				}
 			],
 		],

@@ -15,15 +15,15 @@ class HostingUsers extends \yii\db\ActiveRecord
 	{
 		return [
 			[['information_id', 'user_id'], 'required'],
-			[['information_id', 'user_id'], 'integer']
+			[['information_id', 'user_id'], 'integer'],
+			[['information_id', 'user_id'], 'unique', 'targetAttribute' => ['information_id', 'user_id'], 'message' => 'Выбранный хостинг уже привязан к этому пользователю.']
 		];
 	}
 
 	public function attributeLabels()
 	{
 		return [
-			'information_id' => 'Information ID',
-			'user_id' => 'User ID',
+			'information_id' => 'Выберите хостинг',
 		];
 	}
 

@@ -46,7 +46,7 @@ $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. о�
 			],
 			[
 				'attribute' => 'paid_till',
-				'value' => date('d.m.Y H:i', $model->paid_till),
+				'value' => ($model->paid_till > 0) ? date('d.m.Y H:i', $model->paid_till) : '',
 			],
 			[
 				'attribute' => 'hosting_face',
@@ -67,7 +67,7 @@ $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. о�
 			],
 			[
 				'attribute' => 'rate',
-				'value' => $model->getPrice()->one()->value.' руб.',
+				'value' => ($model->rate > 0) ? $model->getPrice()->one()->value.' руб.' : '',
 			],
 			'extended_info',
 		],

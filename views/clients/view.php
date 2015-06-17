@@ -20,9 +20,12 @@ $dataPays = new ActiveDataProvider([
 	'sort' => false,
 	'pagination' => false,
 ]);
+
+$clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 ?>
 <div class="clients-view">
 	<h1><?= Html::encode($this->title) ?></h1>
+	<?= (!empty($clients_alert)) ? '<p class="bg-success">'.$clients_alert.'</p>' : '' ?>
 	<p>
 		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 		<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
@@ -94,7 +97,9 @@ $dataPays = new ActiveDataProvider([
 				'attribute' => 'paid_till',
 				'contentOptions' => ['width' => 140],
 				'value' => function ($dataHostings) {
-					return date('d.m.Y H:i', $dataHostings->paid_till);
+					if ($dataHostings->paid_till > 0) {
+						return date('d.m.Y H:i', $dataHostings->paid_till);
+					}
 				}
 			],
 			[
@@ -115,7 +120,9 @@ $dataPays = new ActiveDataProvider([
 				'attribute' => 'rate',
 				'contentOptions' => ['width' => 110],
 				'value' => function ($dataHostings, $model) {
-					return $dataHostings->getPrice()->one()->value.' руб.';
+					if ($dataHostings->rate > 0) {
+						return $dataHostings->getPrice()->one()->value.' руб.';
+					}
 				}
 			],
 			[

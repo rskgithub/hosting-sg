@@ -15,7 +15,11 @@ $this->params['breadcrumbs'][] = 'Изменение настроек';
 	<div class="hosting-form">
 		<?php
 		$form = ActiveForm::begin();
-		echo $form->field($model, 'hosting_state')->dropDownList($model->getHostingStatusesArray());
+		if ($model->paid_till > 0 && $model->rate > 0) {
+			echo $form->field($model, 'hosting_state')->dropDownList($model->getHostingStatusesArray());
+		} else {
+			echo $form->field($model, 'hosting_state')->hiddenInput(['value' => 0])->label(false)->error(false);
+		}
 		if ($model->paid_till > time() && $model->hosting_state == 1) {
 			echo $form->field($model, 'hosting_freeze')->dropDownList($model->getHostingFreezesArray());
 		}
