@@ -26,18 +26,13 @@ class PriceController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider = new ActiveDataProvider([
-			'query' => Price::find(),
+			'query' => Price::find()->orderBy('value'),
+			'sort' => false,
+			'pagination' => false,
 		]);
 
 		return $this->render('index', [
 			'dataProvider' => $dataProvider,
-		]);
-	}
-
-	public function actionView($id)
-	{
-		return $this->render('view', [
-			'model' => $this->findModel($id),
 		]);
 	}
 
@@ -46,7 +41,8 @@ class PriceController extends Controller
 		$model = new Price();
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			return $this->redirect(['view', 'id' => $model->id]);
+			/* TODO: добавить запись в журнал событий */
+			return $this->redirect(['index']);
 		} else {
 			return $this->render('create', [
 				'model' => $model,
@@ -59,7 +55,8 @@ class PriceController extends Controller
 		$model = $this->findModel($id);
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			return $this->redirect(['view', 'id' => $model->id]);
+			/* TODO: добавить запись в журнал событий */
+			return $this->redirect(['index']);
 		} else {
 			return $this->render('update', [
 				'model' => $model,
@@ -70,7 +67,7 @@ class PriceController extends Controller
 	public function actionDelete($id)
 	{
 		$this->findModel($id)->delete();
-
+		/* TODO: добавить запись в журнал событий */
 		return $this->redirect(['index']);
 	}
 
@@ -79,7 +76,7 @@ class PriceController extends Controller
 		if (($model = Price::findOne($id)) !== null) {
 			return $model;
 		} else {
-			throw new NotFoundHttpException('The requested page does not exist.');
+			throw new NotFoundHttpException('Ничего не найдено.');
 		}
 	}
 }

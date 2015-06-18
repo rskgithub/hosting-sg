@@ -14,8 +14,9 @@ class Price extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['value'], 'integer'],
-			[['comment'], 'string', 'max' => 255]
+			['value', 'integer'],
+			['comment', 'string', 'max' => 255],
+			['value', 'unique', 'targetClass' => self::className(), 'message' => 'Такая стоимость уже есть в базе.'],
 		];
 	}
 
@@ -23,8 +24,8 @@ class Price extends \yii\db\ActiveRecord
 	{
 		return [
 			'id' => 'ID',
-			'value' => 'Value',
-			'comment' => 'Comment',
+			'value' => 'Стоимость хостинга',
+			'comment' => 'Комментарий',
 		];
 	}
 
