@@ -144,11 +144,38 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 		'dataProvider' => $dataPays,
 		'summary' => '',
 		'columns' => [
-			'id',
-			'date',
+			[
+				'attribute' => 'ID',
+				'contentOptions' => ['width' => 100],
+				'format' => 'html',
+				'value' => function ($dataPays) {
+					return $dataPays->date.'-'.$dataPays->ID;
+				}
+			],
+			[
+				'attribute' => 'date',
+				'contentOptions' => ['width' => 150],
+				'format' => 'html',
+				'value' => function ($dataPays) {
+					return date('d.m.Y H:i', $dataPays->date);
+				}
+			],
 			'hosting_name',
-			'value',
-			'state',
+			[
+				'attribute' => 'value',
+				'contentOptions' => ['width' => 100],
+				'format' => 'html',
+				'value' => function ($dataPays) {
+					return $dataPays->value.' руб.';
+				}
+			],
+			[
+				'attribute' => 'state',
+				'contentOptions' => ['width' => 150],
+				'value' => function ($dataPays) {
+					return $dataPays->getPayStatusesValue();
+				}
+			],
 		],
 	]);
 	?>

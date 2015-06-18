@@ -6,6 +6,23 @@ use Yii;
 
 class PayLog extends \yii\db\ActiveRecord
 {
+	const PAY_STATUS_FAIL = 0;
+	const PAY_STATUS_GOOD = 1;
+	
+	public static function getPayStatusesArray()
+	{
+		return [
+			self::PAY_STATUS_FAIL => 'Не выполнено',
+			self::PAY_STATUS_GOOD => 'Проведён',
+		];
+	}
+	
+	public function getPayStatusesValue()
+	{
+		$statuses = self::getPayStatusesArray();
+		return isset($statuses[$this->state]) ? $statuses[$this->state] : '';
+	}
+	
 	public static function tableName()
 	{
 		return 'pay_log';
@@ -23,12 +40,12 @@ class PayLog extends \yii\db\ActiveRecord
 	public function attributeLabels()
 	{
 		return [
-			'ID' => 'ID',
-			'date' => 'Date',
-			'user_ID' => 'User  ID',
-			'hosting_name' => 'Hosting Name',
-			'value' => 'Value',
-			'state' => 'State',
+			'ID' => 'ID транзакции',
+			'date' => 'Дата',
+			'user_ID' => 'Пользователь',
+			'hosting_name' => 'Хостинг',
+			'value' => 'Сумма',
+			'state' => 'Статус',
 		];
 	}
 
