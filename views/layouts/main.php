@@ -35,7 +35,7 @@ AppAsset::register($this);
 					['label' => 'Хостинг', 'url' => ['/hosting/index']],
 					['label' => 'Клиенты', 'url' => ['/clients/index']],
 					['label' => 'Цены', 'url' => ['/price/index']],
-					['label' => 'Пользователи', 'url' => ['/users/index']],
+					['label' => 'Управляющие', 'url' => ['/users/index']],
 					Yii::$app->user->isGuest ?
 						['label' => 'Войти', 'url' => ['/users/login']] :
 						['label' => 'Выйти (' . Yii::$app->user->identity->username . ')',

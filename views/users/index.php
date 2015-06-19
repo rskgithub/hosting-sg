@@ -3,38 +3,38 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
-$this->title = 'Users';
+$this->title = 'Управляющие';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="users-index">
-
 	<h1><?= Html::encode($this->title) ?></h1>
-
-	<p>
-		<?= Html::a('Create Users', ['create'], ['class' => 'btn btn-success']) ?>
-	</p>
-
-	<?= GridView::widget([
+	<?php
+	echo GridView::widget([
+		'id' => 'users-list',
 		'dataProvider' => $dataProvider,
+		'summary' => '',
 		'columns' => [
-			['class' => 'yii\grid\SerialColumn'],
-
-			'id',
-			'email:email',
-			'auth_key',
-			'password',
-			'name',
-			// 'passport:ntext',
-			// 'passport_issued:ntext',
-			// 'phone:ntext',
-			// 'address:ntext',
-			// 'u_inn',
-			// 'u_kpp',
-			// 'activation_key',
-			// 'status',
-
-			['class' => 'yii\grid\ActionColumn'],
+			[
+				'attribute' => 'id',
+				'contentOptions' => ['width' => 70],
+			],
+			[
+				'attribute' => 'name',
+				'contentOptions' => ['width' => 525],
+				'format' => 'html',
+				'value' => function ($dataProvider) {
+					return '<a href="'.Yii::$app->urlManager->createUrl(['/users/view', 'id' => $dataProvider->id]).'">'.$dataProvider->name.'</a>';
+				}
+			],
+			'email',
+			[
+				'attribute' => 'status',
+				'format' => 'html',
+				'value' => function ($dataProvider) {
+					return $dataProvider->getUserStatusesValue();
+				}
+			],
 		],
-	]); ?>
-
+	]);
+	?>
 </div>

@@ -47,6 +47,7 @@ class ClientsController extends Controller
 	public function actionCreate()
 	{
 		$model = new Users();
+		$model->scenario = 'create';
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
 			/* TODO: добавить запись в журнал событий */
@@ -61,6 +62,7 @@ class ClientsController extends Controller
 	public function actionUpdate($id)
 	{
 		$model = $this->findModel($id);
+		$model->scenario = 'update';
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
 			/* TODO: добавить запись в журнал событий */

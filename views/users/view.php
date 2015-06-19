@@ -4,41 +4,26 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Управляющие', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="users-view">
-
 	<h1><?= Html::encode($this->title) ?></h1>
-
-	<p>
-		<?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Delete', ['delete', 'id' => $model->id], [
-			'class' => 'btn btn-danger',
-			'data' => [
-				'confirm' => 'Are you sure you want to delete this item?',
-				'method' => 'post',
-			],
-		]) ?>
-	</p>
-
-	<?= DetailView::widget([
+	<p><?= Html::a('Профиль клиента', ['/clients/view', 'id' => $model->id], ['class' => 'btn btn-info']) ?></p>
+	<?php
+	echo DetailView::widget([
 		'model' => $model,
 		'attributes' => [
-			'id',
-			'email:email',
-			'auth_key',
-			'password',
-			'name',
-			'passport:ntext',
-			'passport_issued:ntext',
+			'email:ntext',
 			'phone:ntext',
-			'address:ntext',
-			'u_inn',
-			'u_kpp',
-			'activation_key',
-			'status',
+			[
+				'attribute' => 'status',
+				'value' => $model->getUserStatusesValue(),
+			],
 		],
-	]) ?>
-
+	]);
+	?>
+	<br />
+	<h2>Журнал действий</h2>
+	<p>Раздел находится в стадии разработки.</p>
 </div>

@@ -6,6 +6,25 @@ use Yii;
 
 class Users extends \yii\db\ActiveRecord
 {
+	const USER_STATUS_CLIENT = 0;
+	const USER_STATUS_MANAGER = 1;
+	const USER_STATUS_ADMIN = 2;
+	
+	public static function getUserStatusesArray()
+	{
+		return [
+			self::USER_STATUS_CLIENT => 'Клиент',
+			self::USER_STATUS_MANAGER => 'Оператор',
+			self::USER_STATUS_ADMIN => 'Администратор',
+		];
+	}
+	
+	public function getUserStatusesValue()
+	{
+		$statuses = self::getUserStatusesArray();
+		return isset($statuses[$this->status]) ? $statuses[$this->status] : '';
+	}
+	
 	public static function tableName()
 	{
 		return 'users';
@@ -15,7 +34,7 @@ class Users extends \yii\db\ActiveRecord
 	{
 		$scenarios = parent::scenarios();
 		$scenarios['create'] = ['name', 'email', 'status'];
-		$scenarios['update'] = ['name', 'email', 'phone', 'address', 'passport', 'passport_issued', 'u_inn', 'u_kpp'];
+		$scenarios['update'] = ['name', 'email', 'phone', 'address', 'passport', 'passport_issued', 'u_inn', 'u_kpp', 'status'];
 		return $scenarios;
 	}
 
@@ -44,6 +63,7 @@ class Users extends \yii\db\ActiveRecord
 			'address' => 'Адрес',
 			'u_inn' => 'ИНН',
 			'u_kpp' => 'КПП',
+			'status' => 'Роль',
 		];
 	}
 

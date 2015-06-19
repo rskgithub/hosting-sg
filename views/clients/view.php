@@ -26,16 +26,19 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 <div class="clients-view">
 	<h1><?= Html::encode($this->title) ?></h1>
 	<?= (!empty($clients_alert)) ? '<p class="bg-success">'.$clients_alert.'</p>' : '' ?>
-	<p>
-		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+	<p><?php
+	echo Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+	echo ' '.Html::a('Удалить', ['delete', 'id' => $model->id], [
 			'class' => 'btn btn-danger',
 			'data' => [
 				'confirm' => 'Вы уверены, что хотите удалить этого клиента?',
 				'method' => 'post',
 			],
-		]) ?>
-	</p>
+		]);
+	if ($model->status > 0) {
+		echo ' '.Html::a('Профиль управляющего', ['/users/view', 'id' => $model->id], ['class' => 'btn btn-info']);
+	}
+	?></p>
 	<?php
 	echo DetailView::widget([
 		'model' => $model,
@@ -47,6 +50,10 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 			'passport_issued:ntext',
 			'u_inn',
 			'u_kpp',
+			[
+				'attribute' => 'status',
+				'value' => $model->getUserStatusesValue(),
+			],
 		],
 	]);
 	?>
