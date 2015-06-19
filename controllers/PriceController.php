@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Price;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -14,6 +15,20 @@ class PriceController extends Controller
 	public function behaviors()
 	{
 		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'only' => ['index', 'create', 'update', 'delete'],
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+						'denyCallback' => function() {
+							return Yii::$app->response->redirect(['/users/login']);
+						},
+					],
+				
+				]
+			],
 			'verbs' => [
 				'class' => VerbFilter::className(),
 				'actions' => [

@@ -6,6 +6,7 @@ use Yii;
 use app\models\HostingUsers;
 use app\models\Users;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -15,6 +16,20 @@ class ClientsController extends Controller
 	public function behaviors()
 	{
 		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'only' => ['index', 'view', 'create', 'update', 'delete', 'hosting'],
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+						'denyCallback' => function() {
+							return Yii::$app->response->redirect(['/users/login']);
+						},
+					],
+				
+				]
+			],
 			'verbs' => [
 				'class' => VerbFilter::className(),
 				'actions' => [

@@ -97,3 +97,4 @@ table tr.warning-2d { background-color: #FCEDD1 !important; }
 table tr.warning-2w { background-color: #E8FFE5 !important; }
 table tr.owner-fail a { color: red !important; }
 p.bg-success { padding: 15px; }
+#login-form input.form-control{ width: 225px; }

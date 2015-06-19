@@ -3,8 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\base\NotSupportedException;
 
-class Users extends \yii\db\ActiveRecord
+class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
 	const USER_STATUS_CLIENT = 0;
 	const USER_STATUS_MANAGER = 1;
@@ -80,5 +81,65 @@ class Users extends \yii\db\ActiveRecord
 	public function getPayLogs()
 	{
 		return $this->hasMany(PayLog::className(), ['user_ID' => 'id']);
+	}
+	
+	public static function findIdentity($id)
+	{
+		return static::findOne(['id' => $id]);
+	}
+	
+	public static function findIdentityByAccessToken($token, $type = null)
+	{
+		throw new NotSupportedException('findIdentityByAccessToken is not implemented.');
+	}
+	
+	public function getId()
+	{
+		return $this->getPrimaryKey();
+	}
+	
+	public function getAuthKey()
+	{
+		return $this->auth_key;
+	}
+	
+	public function validateAuthKey($authKey)
+	{
+		return $this->getAuthKey() === $authKey;
+	}
+	
+	public function generateAuthKey()
+	{
+		$this->auth_key = Yii::$app->security->generateRandomString();
+	}
+	
+	public static function findByEmail($email)
+	{
+		return static::findOne(['email' => $email]);
+	}
+	
+	public function validatePassword($password)
+	{
+		return Yii::$app->security->validatePassword($password, $this->password);
+	}
+	
+	public function generateActivationKey()
+	{
+		$this->activation_key = Yii::$app->security->generateRandomString();
+	}
+	
+	public static function findByActivationKey($key)
+	{
+		return static::findOne(['activation_key' => $key]);
+	}
+	
+	public function setPassword($password)
+	{
+		$this->password = Yii::$app->security->generatePasswordHash($password);
+	}
+	
+	public function removeActivationKey()
+	{
+		$this->activation_key = '';
 	}
 }

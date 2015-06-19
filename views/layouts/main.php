@@ -38,7 +38,7 @@ AppAsset::register($this);
 					['label' => 'Управляющие', 'url' => ['/users/index']],
 					Yii::$app->user->isGuest ?
 						['label' => 'Войти', 'url' => ['/users/login']] :
-						['label' => 'Выйти (' . Yii::$app->user->identity->username . ')',
+						['label' => 'Выйти (' . Yii::$app->user->identity->name . ')',
 							'url' => ['/users/logout'],
 							'linkOptions' => ['data-method' => 'post']],
 				],

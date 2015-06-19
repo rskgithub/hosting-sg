@@ -5,11 +5,31 @@ namespace app\controllers;
 use Yii;
 use app\models\Hosting;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 class HostingController extends Controller
 {
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'only' => ['index', 'view', 'update', 'extension', 'notification'],
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+						'denyCallback' => function() {
+							return Yii::$app->response->redirect(['/users/login']);
+						},
+					],
+				
+				]
+			],
+		];
+	}
 	public function actionIndex()
 	{
 		$dataProvider = new ActiveDataProvider([
