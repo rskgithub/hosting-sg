@@ -16,7 +16,6 @@ Thumbs.db
 /config/db.php
 
 # runtime folders and files
-/components/rbac/assignments.php
 /runtime
 /tests
 

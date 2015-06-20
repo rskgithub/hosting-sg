@@ -3,11 +3,13 @@
 namespace app\controllers;
 
 use Yii;
+use app\components\AuthControl;
 use app\models\Hosting;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 
 class HostingController extends Controller
 {
@@ -27,6 +29,9 @@ class HostingController extends Controller
 					],
 				
 				]
+			],
+			'authcontrol' => [
+				'class' => AuthControl::className()
 			],
 		];
 	}
@@ -69,6 +74,9 @@ class HostingController extends Controller
 	{
 		$day = intval(Yii::$app->request->get('day'));
 		if ($day == 365) {
+			if (!Yii::$app->user->can('hostingExtensionYear'))
+				throw new ForbiddenHttpException('Вам не разрешено производить данное действие.');
+			
 			$model = $this->findModel($id);
 			$paid_till = intval($model->paid_till) + (60 * 60 * 24 * $day);
 			$args = [

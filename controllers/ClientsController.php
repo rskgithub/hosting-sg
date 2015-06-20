@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\components\AuthControl;
 use app\models\HostingUsers;
 use app\models\Users;
 use yii\data\ActiveDataProvider;
@@ -22,12 +23,17 @@ class ClientsController extends Controller
 				'rules' => [
 					[
 						'allow' => true,
+						'actions' => ['delete', 'hosting'],
+						'roles' => ['admin'],
+					],
+					[
+						'allow' => true,
+						'actions' => ['index', 'view', 'create', 'update'],
 						'roles' => ['@'],
 						'denyCallback' => function() {
 							return Yii::$app->response->redirect(['/users/login']);
 						},
 					],
-				
 				]
 			],
 			'verbs' => [
@@ -35,6 +41,9 @@ class ClientsController extends Controller
 				'actions' => [
 					'delete' => ['post'],
 				],
+			],
+			'authcontrol' => [
+				'class' => AuthControl::className()
 			],
 		];
 	}
@@ -46,7 +55,7 @@ class ClientsController extends Controller
 			'sort' => false,
 			'pagination' => false,
 		]);
-
+		
 		return $this->render('index', [
 			'dataProvider' => $dataProvider,
 		]);
@@ -77,11 +86,19 @@ class ClientsController extends Controller
 	public function actionUpdate($id)
 	{
 		$model = $this->findModel($id);
+		$status = $model->status;
 		$model->scenario = 'update';
 
-		if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			/* TODO: добавить запись в журнал событий */
-			return $this->redirect(['view', 'id' => $model->id]);
+		if ($model->load(Yii::$app->request->post())) {
+			if ($status != $model->status) {
+				$model->auth_key = '';
+			}
+			if ($model->save()) {
+				/* TODO: добавить запись в журнал событий */
+				return $this->redirect(['view', 'id' => $model->id]);
+			} else {
+				return $this->render('update', ['model' => $model]);
+			}
 		} else {
 			return $this->render('update', [
 				'model' => $model,
@@ -96,7 +113,7 @@ class ClientsController extends Controller
 		return $this->redirect(['index']);
 	}
 	
-	public function actionHosting($action, $client_id = null, $hosting_id = null)
+	public function actionHosting($action, $client_id, $hosting_id = null)
 	{
 		switch ($action)
 		{

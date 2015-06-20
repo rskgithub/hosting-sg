@@ -18,7 +18,7 @@ $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. о�
 		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 		<?= Html::a('Отправить уведомление'.$last_manual_notification, ['notification', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
 		<?= ($model->hosting_freeze == 0 && $model->paid_till > time() && $model->hosting_state == 1) ? Html::a('Заморозить на 5 дней', ['extension', 'id' => $model->id, 'day' => 5], ['class' => 'btn btn-info']) : '' ?>
-		<?= Html::a('Продлить на год', ['extension', 'id' => $model->id, 'day' => 365], ['class' => 'btn btn-success']) ?>
+		<?= (Yii::$app->user->can('hostingExtensionYear')) ? Html::a('Продлить на год', ['extension', 'id' => $model->id, 'day' => 365], ['class' => 'btn btn-success']) : '' ?>
 	</p>
 	<?php
 	$dataClients = $model->getUsers()->all();

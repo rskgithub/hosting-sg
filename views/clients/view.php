@@ -28,13 +28,15 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 	<?= (!empty($clients_alert)) ? '<p class="bg-success">'.$clients_alert.'</p>' : '' ?>
 	<p><?php
 	echo Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-	echo ' '.Html::a('Удалить', ['delete', 'id' => $model->id], [
+	if (Yii::$app->user->can('userDelete')) {
+		echo ' '.Html::a('Удалить', ['delete', 'id' => $model->id], [
 			'class' => 'btn btn-danger',
 			'data' => [
 				'confirm' => 'Вы уверены, что хотите удалить этого клиента?',
 				'method' => 'post',
 			],
 		]);
+	}
 	if ($model->status > 0) {
 		echo ' '.Html::a('Профиль управляющего', ['/users/view', 'id' => $model->id], ['class' => 'btn btn-info']);
 	}
@@ -59,8 +61,10 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 	?>
 	<br />
 	<h2>Хостинг</h2>
-	<p><?= Html::a('Добавить хостинг', ['hosting', 'action' => 'add', 'client_id' => $model->id], ['class' => 'btn btn-success']) ?></p>
 	<?php
+	if (Yii::$app->user->can('hostingAdd')) {
+		echo '<p>'.Html::a('Добавить хостинг', ['hosting', 'action' => 'add', 'client_id' => $model->id], ['class' => 'btn btn-success']).'</p>';
+	}
 	echo GridView::widget([
 		'id' => 'hostings-by-client',
 		'dataProvider' => $dataHostings,
@@ -137,7 +141,7 @@ $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
 				'contentOptions' => ['width' => 100],
 				'format' => 'html',
 				'value' => function ($dataHostings) use ($model) {
-					return Html::a('Удалить', ['hosting', 'action' => 'delete', 'client_id' => $model->id, 'hosting_id' => $dataHostings->id], ['class' => 'btn btn-danger']);
+					return (Yii::$app->user->can('hostingDelete')) ? Html::a('Удалить', ['hosting', 'action' => 'delete', 'client_id' => $model->id, 'hosting_id' => $dataHostings->id], ['class' => 'btn btn-danger']) : '';
 				}
 			],
 		],

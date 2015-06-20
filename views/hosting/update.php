@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = 'Изменение настроек';
 		}
 		echo $form->field($model, 'paid_till')->widget(\yii\jui\DatePicker::classname(), ['language' => 'ru', 'dateFormat' => 'dd.MM.yyyy', 'options' => ['class' => 'form-control']])->hint('Не рекомендуется изменять дату в ручном режиме.');
 		echo $form->field($model, 'hosting_face')->dropDownList($model->getHostingFacesArray());
-		echo $form->field($model, 'rate')->dropDownList(ArrayHelper::map(Price::find()->orderBy('value')->all(), 'id', 'value'));
+		echo (Yii::$app->user->can('hostingRateEdit')) ? $form->field($model, 'rate')->dropDownList(ArrayHelper::map(Price::find()->orderBy('value')->all(), 'id', 'value')) : '';
 		echo $form->field($model, 'extended_info')->textarea(['rows' => 4]);
 		echo '
 		<div class="form-group">

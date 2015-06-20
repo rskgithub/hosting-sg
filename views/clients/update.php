@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = 'Изменение клиента';
 		echo $form->field($model, 'passport_issued')->textInput(['maxlength' => true]);
 		echo $form->field($model, 'u_inn')->textInput(['maxlength' => true]);
 		echo $form->field($model, 'u_kpp')->textInput(['maxlength' => true]);
-		echo $form->field($model, 'status')->dropDownList($model->getUserStatusesArray());
+		echo (Yii::$app->user->can('userRoleChange')) ? $form->field($model, 'status')->dropDownList($model->getUserStatusesArray()) : '';
 		echo '
 		<div class="form-group">
 			'.Html::submitButton('Сохранить', ['class' => 'btn btn-success']).'

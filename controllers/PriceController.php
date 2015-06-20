@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\components\AuthControl;
 use app\models\Price;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -21,6 +22,12 @@ class PriceController extends Controller
 				'rules' => [
 					[
 						'allow' => true,
+						'actions' => ['create', 'update', 'delete'],
+						'roles' => ['admin'],
+					],
+					[
+						'allow' => true,
+						'actions' => ['index'],
 						'roles' => ['@'],
 						'denyCallback' => function() {
 							return Yii::$app->response->redirect(['/users/login']);
@@ -34,6 +41,9 @@ class PriceController extends Controller
 				'actions' => [
 					'delete' => ['post'],
 				],
+			],
+			'authcontrol' => [
+				'class' => AuthControl::className()
 			],
 		];
 	}

@@ -11,6 +11,14 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 	const USER_STATUS_MANAGER = 1;
 	const USER_STATUS_ADMIN = 2;
 	
+	public static function getRoleArray()
+	{
+		return [
+			self::USER_STATUS_MANAGER => 'manager',
+			self::USER_STATUS_ADMIN => 'admin',
+		];
+	}
+	
 	public static function getUserStatusesArray()
 	{
 		return [
@@ -115,7 +123,7 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 	
 	public static function findByEmail($email)
 	{
-		return static::findOne(['email' => $email]);
+		return static::find()->where(['email' => $email])->andWhere(['>', 'status', 0])->limit(1)->one();
 	}
 	
 	public function validatePassword($password)

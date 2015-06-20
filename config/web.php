@@ -8,6 +8,13 @@ $config = [
 	'bootstrap' => ['log'],
 	'defaultRoute' => 'hosting',
 	'components' => [
+		'authManager' => [
+			'class' => 'yii\rbac\PhpManager',
+			'defaultRoles' => ['manager', 'admin'],
+			'itemFile' => '@app/components/rbac/items.php',
+			'assignmentFile' => '@app/components/rbac/assignments.php',
+			'ruleFile' => '@app/components/rbac/rules.php'
+		],
 		'request' => [
 			'cookieValidationKey' => 'TjNadAD3okPlGle85Mn6457IBW2NvT2r',
 		],

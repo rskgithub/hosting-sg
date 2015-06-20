@@ -41,7 +41,11 @@ class LoginForm extends Model
 		if ($this->validate()) {
 			$model = $this->getUser();
 			$model->generateAuthKey();
-			if (Yii::$app->user->login($model, $this->rememberMe ? 3600*24*30 : 0)) {
+			if (Yii::$app->user->login($model, $this->rememberMe ? 3600 * 24 * 30 : 0)) {
+				$role = Users::getRoleArray();
+				$auth = Yii::$app->authManager;
+				$auth->revokeAll(Yii::$app->user->identity->id);
+				$auth->assign($auth->getRole($role[Yii::$app->user->identity->status]), Yii::$app->user->identity->id);
 				if ($model->save()) {
 					return true;
 				} else {

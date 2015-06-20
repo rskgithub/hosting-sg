@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\components\AuthControl;
 use app\models\Users;
 use app\models\LoginForm;
 use app\models\RecoveryForm;
@@ -32,6 +33,9 @@ class UsersController extends Controller
 					],
 				
 				]
+			],
+			'authcontrol' => [
+				'class' => AuthControl::className()
 			],
 		];
 	}
@@ -113,6 +117,9 @@ class UsersController extends Controller
 					return $this->refresh();
 				} else {
 					Yii::$app->getSession()->setFlash('auth_message', 'К сожалению, сбросить пароль для указанного e-mail не удалось.');
+					return $this->render('recovery', [
+						'model' => $model,
+					]);
 				}
 			} else {
 				return $this->render('recovery', [
