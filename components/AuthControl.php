@@ -9,7 +9,7 @@ class AuthControl extends ActionFilter
 	public function beforeAction($action)
 	{
 		if (strlen(Yii::$app->user->identity->auth_key) == 0) {
-			if ($action->uniqueId == 'users/login' || $action->uniqueId == 'users/recovery') {
+			if ($action->uniqueId == 'users/login' || $action->uniqueId == 'users/recovery' || $action->uniqueId == 'hosting/control') {
 				return parent::beforeAction($action);
 			} else {
 				Yii::$app->user->logout();

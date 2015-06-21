@@ -17,6 +17,7 @@ Thumbs.db
 
 # runtime folders and files
 /components/rbac/assignments.php
+/web/notification.log
 /runtime
 /tests
 

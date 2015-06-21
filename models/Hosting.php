@@ -22,8 +22,8 @@ class Hosting extends \yii\db\ActiveRecord
 	const HOSTING_NOTICE_USER_F_FREEZE = 4;
 	
 	const HOSTING_NOTICE_ADMIN_NO = 0;
-	const HOSTING_NOTICE_ADMIN_YES = 1;
-	const HOSTING_NOTICE_ADMIN_S_FREEZE = 2;
+	const HOSTING_NOTICE_ADMIN_S_FREEZE = 1;
+	const HOSTING_NOTICE_ADMIN_YES = 2;
 	const HOSTING_NOTICE_ADMIN_F_FREEZE = 3;
 	
 	public static function getHostingStatusesArray()
@@ -89,8 +89,8 @@ class Hosting extends \yii\db\ActiveRecord
 	{
 		return [
 			self::HOSTING_NOTICE_ADMIN_NO => 'Уведомлений не отправлялось',
-			self::HOSTING_NOTICE_ADMIN_YES => 'Запрос на отключение отправлен',
 			self::HOSTING_NOTICE_ADMIN_S_FREEZE => 'Уведомление об активации заморозки',
+			self::HOSTING_NOTICE_ADMIN_YES => 'Запрос на отключение отправлен',
 			self::HOSTING_NOTICE_ADMIN_F_FREEZE => 'Уведомление об окончании заморозки',
 		];
 	}
@@ -154,25 +154,50 @@ class Hosting extends \yii\db\ActiveRecord
 		return parent::beforeSave($insert);
 	}
 	
-	public function sendManualNotification()
+	public function sendNotification($type, $user_type)
 	{
-		$arOwners = $this->getUsers()->all();
-		
-		if ($arOwners) {
+		if ($user_type == 'admin') {
 			$messages = [];
-			foreach ($arOwners as $owner) {
-				$messages[] = Yii::$app->mailer->compose(['html' => 'manualNotification-html'], ['user' => $owner, 'hosting' => $this])
-					->setFrom([Yii::$app->params['supportEmail'] => 'SalesGeneration'])
-					//->setTo($owner->email)
-					->setTo(['nordway88@gmail.com', 'theicesun@yandex.ru'])
-					->setSubject('Уведомление о приближающемся сроке оплаты хостинга');
-			}
-			if (Yii::$app->mailer->sendMultiple($messages) > 0) {
-				$this->updateAttributes(['manual_notification' => time()]);
+			$html = ($type == 'adm_freeze_s') ? 'hostingAdminFreezeNotification-html' : 'hostingAdminNotification-html';
+			$from = [Yii::$app->params['supportEmail'] => 'SalesGeneration'];
+			//$to = [Yii::$app->params['adminEmail'], Yii::$app->params['supportEmail']];
+			$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
+			$subject = ($type == 'adm_freeze_s') ? '[Хостинг] Активация заморозки для хостинга' : '[Хостинг] Просрочена оплата для хостинга';
+			
+			if (Yii::$app->mailer->compose(['html' => $html], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject)->send()) {
 				return true;
 			}
+			
+			return false;
+		} else {
+			$arOwners = $this->getUsers()->all();
+			
+			if ($arOwners) {
+				$messages = [];
+				$from = [Yii::$app->params['supportEmail'] => 'SalesGeneration'];
+				$subject = 'Уведомление о приближающемся сроке оплаты хостинга';
+				
+				if ($this->hosting_face == 0) {
+					//$to = Yii::$app->params['supportEmail'];
+					$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
+					$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
+				} else {
+					foreach ($arOwners as $owner) {
+						//$to = $owner->email;
+						$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
+						$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
+					}
+				}
+				
+				if (Yii::$app->mailer->sendMultiple($messages) > 0) {
+					if ($type == 'manual')
+						$this->updateAttributes(['manual_notification' => time()]);
+						
+					return true;
+				}
+			}
+			
+			return false;
 		}
-		
-		return false;
 	}
 }

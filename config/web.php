@@ -37,6 +37,13 @@ $config = [
 					'class' => 'yii\log\FileTarget',
 					'levels' => ['error', 'warning'],
 				],
+				[
+					'class' => 'yii\log\FileTarget',
+					'levels' => ['info'],
+					'categories' => ['hosting'],
+					'logVars' => [],
+					'logFile' => '@app/web/notification.log',
+				],
 			],
 		],
 		'db' => require(__DIR__ . '/db.php'),

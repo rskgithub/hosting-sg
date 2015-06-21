@@ -35,6 +35,7 @@ class HostingController extends Controller
 			],
 		];
 	}
+	
 	public function actionIndex()
 	{
 		$dataProvider = new ActiveDataProvider([
@@ -87,6 +88,7 @@ class HostingController extends Controller
 				'notification_admin' => 0,
 			];
 			$model->updateAttributes($args);
+			/* TODO: отправка уведомления клиенту */
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Хостинг продлён на '.$day.' дней.');
 			/* TODO: добавить запись в журнал событий */
 		}
@@ -102,13 +104,98 @@ class HostingController extends Controller
 	public function actionNotification($id)
 	{
 		$model = $this->findModel($id);
-		if ($model->sendManualNotification()) {
+		if ($model->sendNotification('manual', 'client')) {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Уведомление успешно отправлено!');
 			/* TODO: добавить запись в журнал событий */
 		} else {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'К сожалению, отправка уведомления не удалась.');
 		}
 		return $this->redirect(['view', 'id' => $id]);
+	}
+	
+	public function actionControl()
+	{
+		Yii::info('Запуск Hosting Control System.', 'hosting');
+		
+		$arHostings = Yii::$app->db->createCommand('SELECT * FROM `information` WHERE hosting_state = 1 AND paid_till > 0 AND paid_till <= '.(time() + 1209600).' ORDER BY paid_till')->queryAll();
+		foreach ($arHostings as $hosting)
+		{
+			$model = $this->findModel($hosting['id']);
+			
+			switch ($hosting['notification_user'])
+			{
+				case 0:
+					// Отправляем уведомление *2 недели* (notification_user = 1)				
+					if ($model->sendNotification('2w', 'client')) {
+						$model->updateAttributes(['notification_user' => 1]);
+						Yii::info('Отправка первого (2 weeks) уведомления для хостинга '.$model->domain, 'hosting');
+					} else {
+						Yii::info('Отправка первого (2 weeks) уведомления для хостинга '.$model->domain.' не удалась.', 'hosting');
+					}
+					break;
+				case 1:
+					// Если до срока оплаты осталось 2 дня, то отправляем уведомление *2 дня* (notification_user = 2)
+					if ($hosting['paid_till'] <= time() + 172800) {
+						if ($model->sendNotification('2d', 'client')) {
+							$model->updateAttributes(['notification_user' => 2]);
+							Yii::info('Отправка второго (2 days) уведомления для хостинга '.$model->domain, 'hosting');
+						} else {
+							Yii::info('Отправка второго (2 days) уведомления для хостинга '.$model->domain.' не удалась.', 'hosting');
+						}
+					}
+					break;
+				case 2:
+					// Если пора выключать хостинг и "заморозка" есть, то отправляем уведомление "заморозка* клиенту и админу (notification_user = 3, notification_admin = 1)
+					// Если пора выключать хостинг и нет "заморозки", то отправляем уведомление "выключение* админу (hosting_state = 0, notification_admin = 2)
+					if ($hosting['paid_till'] <= time()) {
+						if ($hosting['hosting_freeze'] == 1) {
+							if ($model->sendNotification('user_freeze_s', 'client')) {
+								$model->updateAttributes(['notification_user' => 3]);
+								Yii::info('Отправка уведомления об активации заморозки для хостинга '.$model->domain, 'hosting');
+							} else {
+								Yii::info('Отправка уведомления об активации заморозки для хостинга '.$model->domain.' не удалась.', 'hosting');
+							}
+							if ($model->sendNotification('adm_freeze_s', 'admin')) {
+								$model->updateAttributes(['notification_admin' => 1]);
+								Yii::info('Отправка уведомления администратору об активации заморозки для хостинга '.$model->domain, 'hosting');
+							} else {
+								Yii::info('Отправка уведомления администратору об активации заморозки для хостинга '.$model->domain.' не удалась.', 'hosting');
+							}
+						} else {
+							if ($model->sendNotification('off', 'admin')) {
+								$model->updateAttributes(['hosting_state' => 0, 'notification_admin' => 2]);
+								Yii::info('Хостинг '.$model->domain.' помечен для отключения. Уведомление администратору отправлено.', 'hosting');
+							} else {
+								Yii::info('Не удалось пометить хостинг '.$model->domain.' на отключение.', 'hosting');
+							}
+						}
+					}
+					break;
+				case 3:
+					// Если время заморозки вышло, то отправляем уведомление *заморозка окончена* клиенту (hosting_freeze = 0, notification_user = 4) и уведомление *выключение* админу (hosting_state = 0, notification_admin = 2)
+					if ($hosting['paid_till'] <= time() - 3600 * 24 * 5) {
+						if ($model->sendNotification('user_freeze_f', 'client')) {
+							$model->updateAttributes(['hosting_freeze' => 0, 'notification_user' => 4]);
+							Yii::info('Отправка уведомления об окончании заморозки хостинга '.$model->domain, 'hosting');
+						} else {
+							Yii::info('Отправка уведомления об окончании заморозки хостинга '.$model->domain.' не удалась.', 'hosting');
+						}
+						if ($model->sendNotification('off', 'admin')) {
+							$model->updateAttributes(['hosting_state' => 0, 'notification_admin' => 2]);
+							Yii::info('Хостинг '.$model->domain.' помечен для отключения. Уведомление администратору отправлено.', 'hosting');
+						} else {
+							Yii::info('Не удалось пометить хостинг '.$model->domain.' на отключение.', 'hosting');
+						}
+					}
+					break;
+				case 4:
+					// Этого условия у нас быть не должно, подстраховка
+					Yii::info('Случилось невероятное для хостинга '.$model->domain.'!', 'hosting');
+					break;
+			}
+		}
+		
+		Yii::info('Остановка Hosting Control System.', 'hosting');
 	}
 
 	protected function findModel($id)
