@@ -164,11 +164,9 @@ class Hosting extends \yii\db\ActiveRecord
 			$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
 			$subject = ($type == 'adm_freeze_s') ? '[Хостинг] Активация заморозки для хостинга' : '[Хостинг] Просрочена оплата для хостинга';
 			
-			if (Yii::$app->mailer->compose(['html' => $html], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject)->send()) {
+			if (Yii::$app->mailer->compose(['html' => $html], ['arOwners' => $this->getUsers()->all(), 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject)->send()) {
 				return true;
 			}
-			
-			return false;
 		} else {
 			$arOwners = $this->getUsers()->all();
 			
@@ -178,9 +176,10 @@ class Hosting extends \yii\db\ActiveRecord
 				$subject = 'Уведомление о приближающемся сроке оплаты хостинга';
 				
 				if ($this->hosting_face == 0) {
+					$owner = ['name' => 'SalesGeneration'];
 					//$to = Yii::$app->params['supportEmail'];
 					$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
-					$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
+					$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => (object) $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
 				} else {
 					foreach ($arOwners as $owner) {
 						//$to = $owner->email;
@@ -196,8 +195,7 @@ class Hosting extends \yii\db\ActiveRecord
 					return true;
 				}
 			}
-			
-			return false;
 		}
+		return false;
 	}
 }
