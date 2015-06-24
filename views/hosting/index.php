@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'html',
 				'value' => function ($dataProvider) {
 					$dataUsers = $dataProvider->getUsers()->all();
-					$content = array();
+					$content = [];
 					foreach ($dataUsers as $user) {
 						$content[] = '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $user->id]).'">'.$user->name.'</a>';
 					}

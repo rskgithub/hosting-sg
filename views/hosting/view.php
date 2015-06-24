@@ -22,17 +22,10 @@ $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. о�
 	</p>
 	<?php
 	$dataClients = $model->getUsers()->all();
-	$clients = '';
-	$count = count($dataClients);
-	$index = 1;
+	$clients = [];
 	foreach ($dataClients as $client) {
-		$clients .= '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $client->id]).'">'.$client->name.'</a>';
-		if ($index != $count) {
-			$clients .= '<br />';
-		}
-		$index++;
+		$clients[] = '<a href="'.Yii::$app->urlManager->createUrl(['/clients/view', 'id' => $client->id]).'">'.$client->name.'</a>';
 	}
-
 	echo DetailView::widget([
 		'model' => $model,
 		'attributes' => [
@@ -55,7 +48,7 @@ $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. о�
 			[
 				'label' => 'Владельцы',
 				'format' => 'html',
-				'value' => $clients,
+				'value' => implode('<br />', $clients),
 			],
 			[
 				'attribute' => 'notification_user',

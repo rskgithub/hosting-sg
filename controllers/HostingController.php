@@ -88,7 +88,7 @@ class HostingController extends Controller
 				'notification_admin' => 0,
 			];
 			$model->updateAttributes($args);
-			/* TODO: отправка уведомления клиенту */
+			$model->sendNotification('year', 'client');
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Хостинг продлён на '.$day.' дней.');
 			/* TODO: добавить запись в журнал событий */
 		}

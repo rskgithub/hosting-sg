@@ -173,18 +173,19 @@ class Hosting extends \yii\db\ActiveRecord
 			if ($arOwners) {
 				$messages = [];
 				$from = [Yii::$app->params['supportEmail'] => 'SalesGeneration'];
-				$subject = 'Уведомление о приближающемся сроке оплаты хостинга';
+				$subject = ($type != 'year') ? 'Уведомление о приближающемся сроке оплаты хостинга' : 'Успешное продление хостинга на год';
+				$html = ($type != 'year') ? 'hostingNotification-html' : 'hostingYearNotification-html';
 				
 				if ($this->hosting_face == 0) {
 					$owner = ['name' => 'SalesGeneration'];
 					//$to = Yii::$app->params['supportEmail'];
 					$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
-					$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => (object) $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
+					$messages[] = Yii::$app->mailer->compose(['html' => $html], ['user' => (object) $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
 				} else {
 					foreach ($arOwners as $owner) {
 						//$to = $owner->email;
 						$to = ['nordway88@gmail.com', 'theicesun@yandex.ru'];
-						$messages[] = Yii::$app->mailer->compose(['html' => 'hostingNotification-html'], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
+						$messages[] = Yii::$app->mailer->compose(['html' => $html], ['user' => $owner, 'hosting' => $this])->setFrom($from)->setTo($to)->setSubject($subject);
 					}
 				}
 				

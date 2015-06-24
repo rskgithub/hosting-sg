@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'html',
 				'value' => function ($dataProvider) {
 					$dataHostings = $dataProvider->getHosting()->all();
-					$content = array();
+					$content = [];
 					foreach ($dataHostings as $hosting) {
 						$content[] = '<a href="'.Yii::$app->urlManager->createUrl(['/hosting/view', 'id' => $hosting->id]).'">'.$hosting->domain.'</a>';
 					}
