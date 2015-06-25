@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\components\AuthControl;
 use app\models\Hosting;
+use app\models\UsersLog;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -62,7 +63,8 @@ class HostingController extends Controller
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Данные хостинга успешно обновлены.');
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Изменён хостинг '.$model->domain.' (ID :'.$model->id.')');
 			return $this->redirect(['view', 'id' => $model->id]);
 		} else {
 			return $this->render('update', [
@@ -90,13 +92,15 @@ class HostingController extends Controller
 			$model->updateAttributes($args);
 			$model->sendNotification('year', 'client');
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Хостинг продлён на '.$day.' дней.');
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Хостинг '.$model->domain.' (ID :'.$model->id.') продлён на '.$day.' дней');
 		}
 		if ($day == 5) {
 			$model = $this->findModel($id);
 			$model->updateAttributes(['hosting_freeze' => 1]);
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Хостинг будет заморожен на '.$day.' дней по истечению срока оплаты.');
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Для хостинга '.$model->domain.' (ID :'.$model->id.') включена заморозка на '.$day.' дней');
 		}
 		return $this->redirect(['view', 'id' => $id]);
 	}
@@ -106,7 +110,8 @@ class HostingController extends Controller
 		$model = $this->findModel($id);
 		if ($model->sendNotification('manual', 'client')) {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'Уведомление успешно отправлено!');
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Для хостинга '.$model->domain.' (ID :'.$model->id.') отправлено ручное уведомление');
 		} else {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'К сожалению, отправка уведомления не удалась.');
 		}

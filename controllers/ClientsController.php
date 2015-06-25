@@ -4,8 +4,10 @@ namespace app\controllers;
 
 use Yii;
 use app\components\AuthControl;
+use app\models\Hosting;
 use app\models\HostingUsers;
 use app\models\Users;
+use app\models\UsersLog;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -74,7 +76,8 @@ class ClientsController extends Controller
 		$model->scenario = 'create';
 
 		if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Добавлен новый клиент '.$model->name.' (ID :'.$model->id.')');
 			return $this->redirect(['view', 'id' => $model->id]);
 		} else {
 			return $this->render('create', [
@@ -94,7 +97,8 @@ class ClientsController extends Controller
 				$model->auth_key = '';
 			}
 			if ($model->save()) {
-				/* TODO: добавить запись в журнал событий */
+				$log = new UsersLog();
+				$log->logSave(Yii::$app->user->identity->id, 'Изменён клиент '.$model->name.' (ID :'.$model->id.')');
 				return $this->redirect(['view', 'id' => $model->id]);
 			} else {
 				return $this->render('update', ['model' => $model]);
@@ -108,8 +112,10 @@ class ClientsController extends Controller
 
 	public function actionDelete($id)
 	{
-		$this->findModel($id)->delete();
-		/* TODO: добавить запись в журнал событий */
+		$model = $this->findModel($id);
+		$log = new UsersLog();
+		$log->logSave(Yii::$app->user->identity->id, 'Удалён клиент '.$model->name.' (ID :'.$model->id.')');
+		$model->delete();
 		return $this->redirect(['index']);
 	}
 	
@@ -128,7 +134,8 @@ class ClientsController extends Controller
 				$model = new HostingUsers();
 				if ($model->load(Yii::$app->request->post()) && $model->save()) {
 					Yii::$app->getSession()->setFlash('clients_alert', 'Хостинг успешно добавлен.');
-					/* TODO: добавить запись в журнал событий */
+					$log = new UsersLog();
+					$log->logSave(Yii::$app->user->identity->id, 'Для клиента '.$this->findModel($client_id)->name.' (ID: '.$client_id.') добавлен хостинг '.$this->findModel($client_id)->getHosting()->one()->domain.' (ID: '.$model->information_id.')');
 					return $this->redirect(['view', 'id' => $client_id]);
 				} else {
 					return $this->render('hosting', [
@@ -140,7 +147,8 @@ class ClientsController extends Controller
 			case 'delete':
 				if ($this->findModel($client_id)->getHostingUsers()->where('information_id = '.intval($hosting_id))->one()->delete() !== false) {
 					Yii::$app->getSession()->setFlash('clients_alert', 'Хостинг успешно удалён.');
-					/* TODO: добавить запись в журнал событий */
+					$log = new UsersLog();
+					$log->logSave(Yii::$app->user->identity->id, 'У клиента '.$this->findModel($client_id)->name.' (ID: '.$client_id.') удален хостинг '.Hosting::findOne($hosting_id)->domain.' (ID: '.$hosting_id.')');
 				} else {
 					Yii::$app->getSession()->setFlash('clients_alert', 'Не удалось удалить хостинг.');
 				}

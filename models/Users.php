@@ -91,6 +91,11 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 		return $this->hasMany(PayLog::className(), ['user_ID' => 'id']);
 	}
 	
+	public function getUsersLogs()
+	{
+		return $this->hasMany(UsersLog::className(), ['user_id' => 'id']);
+	}
+	
 	public static function findIdentity($id)
 	{
 		return static::findOne(['id' => $id]);

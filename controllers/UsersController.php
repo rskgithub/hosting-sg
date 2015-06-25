@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\components\AuthControl;
 use app\models\Users;
+use app\models\UsersLog;
 use app\models\LoginForm;
 use app\models\RecoveryForm;
 use app\models\ResetPasswordForm;
@@ -73,7 +74,8 @@ class UsersController extends Controller
 		$model = new LoginForm();
 		
 		if ($model->load(Yii::$app->request->post()) && $model->login()) {
-			/* TODO: добавить запись в журнал событий */
+			$log = new UsersLog();
+			$log->logSave(Yii::$app->user->identity->id, 'Вход');
 			return $this->redirect(['/hosting/index']);
 		} else {
 			return $this->render('login', [
@@ -84,8 +86,9 @@ class UsersController extends Controller
 	
 	public function actionLogout()
 	{
+		$log = new UsersLog();
+		$log->logSave(Yii::$app->user->identity->id, 'Выход');
 		Yii::$app->user->logout();
-		/* TODO: добавить запись в журнал событий */
 		return $this->redirect(['login']);
 	}
 	
@@ -101,7 +104,6 @@ class UsersController extends Controller
 			
 			if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
 				Yii::$app->getSession()->setFlash('auth_message', 'Новый пароль успешно сохранён.');
-				/* TODO: добавить запись в журнал событий */
 				$this->redirect(['/users/login']);
 			} else {
 				return $this->render('reset-password', [
@@ -113,7 +115,6 @@ class UsersController extends Controller
 			if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 				if ($model->sendEmail()) {
 					Yii::$app->getSession()->setFlash('auth_message', 'На указанный e-mail выслана инструкция по восстановлению пароля.');
-					/* TODO: добавить запись в журнал событий */
 					return $this->refresh();
 				} else {
 					Yii::$app->getSession()->setFlash('auth_message', 'К сожалению, сбросить пароль для указанного e-mail не удалось.');
