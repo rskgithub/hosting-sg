@@ -114,6 +114,7 @@ class HostingController extends Controller
 			$log->logSave(Yii::$app->user->identity->id, 'Для хостинга '.$model->domain.' (ID :'.$model->id.') отправлено ручное уведомление');
 		} else {
 			Yii::$app->getSession()->setFlash('hosting_alert', 'К сожалению, отправка уведомления не удалась.');
+			Yii::$app->getSession()->setFlash('hosting_alert_status', 'warning');
 		}
 		return $this->redirect(['view', 'id' => $id]);
 	}

@@ -8,11 +8,12 @@ class m150601_184651_prepare_database extends Migration
 	public function safeUp()
 	{
 		$this->alterColumn('users', 'id', Schema::TYPE_INTEGER . '(11) unsigned NOT NULL AUTO_INCREMENT');
-		$this->alterColumn('users', 'password', Schema::TYPE_STRING . '(255) NOT NULL');
-		$this->alterColumn('users', 'passport', Schema::TYPE_STRING . '(255) NOT NULL');
-		$this->alterColumn('users', 'passport_issued', Schema::TYPE_STRING . '(255) NOT NULL');
-		$this->alterColumn('users', 'phone', Schema::TYPE_STRING . '(255) NOT NULL');
-		$this->alterColumn('users', 'address', Schema::TYPE_STRING . '(255) NOT NULL');
+		$this->alterColumn('users', 'password', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
+		$this->alterColumn('users', 'passport', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
+		$this->alterColumn('users', 'passport_issued', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
+		$this->alterColumn('users', 'phone', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
+		$this->alterColumn('users', 'address', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
+		$this->alterColumn('users', 'activation_key', Schema::TYPE_STRING . '(255) NULL DEFAULT NULL');
 		$this->alterColumn('information_users', 'user_id', Schema::TYPE_INTEGER . '(11) unsigned NOT NULL DEFAULT 0');
 		$this->alterColumn('pay_log', 'user_ID', Schema::TYPE_INTEGER . '(11) unsigned NOT NULL DEFAULT 0');
 		$this->renameColumn('pay_log', 'domain_ID', 'hosting_name');
@@ -87,6 +88,7 @@ class m150601_184651_prepare_database extends Migration
 		$this->renameColumn('pay_log', 'hosting_name', 'domain_ID');
 		$this->alterColumn('pay_log', 'user_ID', Schema::TYPE_INTEGER . '(11) NOT NULL DEFAULT 0');
 		$this->alterColumn('information_users', 'user_id', Schema::TYPE_INTEGER . '(10) UNSIGNED NOT NULL');
+		$this->alterColumn('users', 'activation_key', Schema::TYPE_STRING . '(60) NOT NULL');
 		$this->alterColumn('users', 'address', Schema::TYPE_TEXT . ' NOT NULL');
 		$this->alterColumn('users', 'phone', Schema::TYPE_TEXT . ' NOT NULL');
 		$this->alterColumn('users', 'passport_issued', Schema::TYPE_TEXT . ' NOT NULL');

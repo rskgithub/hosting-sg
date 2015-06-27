@@ -22,10 +22,13 @@ $dataPays = new ActiveDataProvider([
 ]);
 
 $clients_alert = Yii::$app->getSession()->getFlash('clients_alert');
+$clients_alert_status = Yii::$app->getSession()->getFlash('clients_alert_status');
+if (empty($clients_alert_status))
+	$clients_alert_status = 'success';
 ?>
 <div class="clients-view">
 	<h1><?= Html::encode($this->title) ?></h1>
-	<?= (!empty($clients_alert)) ? '<p class="bg-success">'.$clients_alert.'</p>' : '' ?>
+	<?= (!empty($clients_alert)) ? '<p class="bg-'.$clients_alert_status.'">'.$clients_alert.'</p>' : '' ?>
 	<p><?php
 	echo Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
 	if (Yii::$app->user->can('userDelete')) {

@@ -118,6 +118,7 @@ class UsersController extends Controller
 					return $this->refresh();
 				} else {
 					Yii::$app->getSession()->setFlash('auth_message', 'К сожалению, сбросить пароль для указанного e-mail не удалось.');
+					Yii::$app->getSession()->setFlash('auth_message_status', 'warning');
 					return $this->render('recovery', [
 						'model' => $model,
 					]);

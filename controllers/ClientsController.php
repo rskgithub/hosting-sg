@@ -151,6 +151,7 @@ class ClientsController extends Controller
 					$log->logSave(Yii::$app->user->identity->id, 'У клиента '.$this->findModel($client_id)->name.' (ID: '.$client_id.') удален хостинг '.Hosting::findOne($hosting_id)->domain.' (ID: '.$hosting_id.')');
 				} else {
 					Yii::$app->getSession()->setFlash('clients_alert', 'Не удалось удалить хостинг.');
+					Yii::$app->getSession()->setFlash('clients_alert_status', 'warning');
 				}
 				return $this->redirect(['view', 'id' => $client_id]);
 				break;

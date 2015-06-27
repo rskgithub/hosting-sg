@@ -8,12 +8,15 @@ $this->params['breadcrumbs'][] = ['label' => 'Хостинг', 'url' => ['index'
 $this->params['breadcrumbs'][] = $model->domain;
 
 $hosting_alert = Yii::$app->getSession()->getFlash('hosting_alert');
+$hosting_alert_status = Yii::$app->getSession()->getFlash('hosting_alert_status');
+if (empty($hosting_alert_status))
+	$hosting_alert_status = 'success';
 
 $last_manual_notification = ($model->manual_notification > 0) ? ' (посл. отправка: '.date('d.m.Y', $model->manual_notification).')' : '';
 ?>
 <div class="hosting-view">
 	<h1><?= Html::encode($this->title) ?></h1>
-	<?= (!empty($hosting_alert)) ? '<p class="bg-success">'.$hosting_alert.'</p>' : '' ?>
+	<?= (!empty($hosting_alert)) ? '<p class="bg-'.$hosting_alert_status.'">'.$hosting_alert.'</p>' : '' ?>
 	<p>
 		<?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 		<?= Html::a('Отправить уведомление'.$last_manual_notification, ['notification', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
